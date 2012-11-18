@@ -179,6 +179,9 @@ class xrowEPayment
         foreach ( $gatewaysTypes as $key )
         {
             $gateway = $availableGateways[$key];
+			if( class_exists( $availableGateways[$key]['class_name'] ) === false ) {
+				continue;
+			}
             $object = new $availableGateways[$key]['class_name']();
             $gateway['Name'] = $object->name();
             $gateway['value'] = $key;
@@ -312,6 +315,7 @@ class xrowEPayment
                 }
             }
         }
+        eZPaymentGatewayType::loadAndRegisterExtensionGateways();
     }
 }
 
