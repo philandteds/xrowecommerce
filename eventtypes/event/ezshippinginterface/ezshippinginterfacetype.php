@@ -237,6 +237,10 @@ class eZShippingInterfaceType extends eZWorkflowEventType
         // ABSTRACTION LAYER FOR WEIGHT
         // Also builds Packagelist
         $totalweight = 0;
+        /* 
+         * We do not need weight layer for MK
+         */
+/*
         $boxweight = 0;
         if ( $ini->hasVariable( 'ShippingInterfaceSettings', 'ShippingInterface' ) and class_exists( $ini->variable( 'ShippingInterfaceSettings', 'ShippingInterface' ) ) )
         {
@@ -314,6 +318,7 @@ class eZShippingInterfaceType extends eZWorkflowEventType
         {
             throw new Exception( "Shipping Interface not set. xrowecommerce.ini[ShippingInterfaceSettings][ShippingInterface] " );
         }
+*/
 
         // @TODO show template that hazardous items got removed
         /*
