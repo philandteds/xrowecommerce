@@ -25,6 +25,7 @@ class xrowEPayment
         }
         else
         {
+	    return false;
             throw new Exception( "Gateway $classname does no longer exist." );
         }
     }

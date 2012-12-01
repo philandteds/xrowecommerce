@@ -447,7 +447,7 @@ class eZShippingInterfaceType extends eZWorkflowEventType
         }
         
         $ini = eZINI::instance( 'shipping.ini' );
-        if ( $ini->variable( 'Settings', 'ShowShippingWeight' ) == 'enabled' )
+        if ( $ini->hasVariable('Settings', 'ShowShippingWeight') && $ini->variable( 'Settings', 'ShowShippingWeight' ) == 'enabled' )
         {
             $description .= ' ( ' . $totalweight . ' ' . $ini->variable( 'Settings', 'WeightUnit' ) . ' )';
         }
