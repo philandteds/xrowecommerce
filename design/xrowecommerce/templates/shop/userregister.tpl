@@ -418,7 +418,7 @@
                                         hash( 'module',   'xrowecommerce',
                                               'function', 'bypass_captcha' ) )}
 
-                    {if and( ezini('Fields','Captcha','xrowecommerce.ini').enabled|eq('true'), $access|not, ezhttp( 'xrowCaptchaSolved', 'session' )|not)}
+                    {if and( $recaptcha|eq('true'), $access|not, ezhttp( 'xrowCaptchaSolved', 'session' )|not)}
                         <div class="block">
                             <label>{'Verification'|i18n('extension/xrowecommerce')}<span class="required">*</span></label>
                             <div class="labelbreak"></div>

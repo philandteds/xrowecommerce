@@ -46,7 +46,7 @@ class xrowCountryType extends eZDataType
         $settings = $ini->getNamedArray();
         $locale = $settings["RegionalSettings"]["Locale"];
         $filepath = "extension/xrowecommerce/share/geonames.org/countryInfoJSON/" . $locale . "/countryInfoJSON";
-        if (file_get_contents( $filepath ))
+        if (is_readable( $filepath ))
         {
             $json = json_decode(file_get_contents( $filepath ));
             if( isset( $json->geonames ) )

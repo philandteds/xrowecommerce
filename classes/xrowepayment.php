@@ -316,7 +316,8 @@ class xrowEPayment
                 }
             }
         }
-        eZPaymentGatewayType::loadAndRegisterExtensionGateways();
+        $paymentGatewayType = new eZPaymentGatewayType();
+        $paymentGatewayType->loadAndRegisterExtensionGateways();
     }
 }
 

@@ -926,14 +926,15 @@ if ( $module->isCurrentAction( 'Store' ) )
     $accessAllowed = $currentUser->hasAccessTo( 'xrowecommerce', 'bypass_captcha' );
     /* Captcha check */
     $fields_captcha = $xini->variable( 'Fields', 'Captcha' );
+
     if ( class_exists( 'xrowVerification' ) and $fields_captcha['enabled'] == 'true' and $accessAllowed['accessWord'] != 'yes' and isset( $_SESSION['xrowCaptchaSolved'] ) && empty( $_SESSION['xrowCaptchaSolved'] ) )
     {
-        $captcha = true;
+        $recaptcha = true;
         $verification = new xrowVerification();
         $answer = $verification->verify( $http );
         if ( $answer != true )
         {
-            $captcha = false;
+            $recaptcha = false;
             $inputIsValid = false;
         }
         else
@@ -1028,7 +1029,7 @@ if ( $module->isCurrentAction( 'Store' ) )
         $shippingTypeNode = $doc->createElement( 'shippingtype', xrowECommerce::encodeString( $shippingtype ) );
         $root->appendChild( $shippingTypeNode );
         
-        $recaptacheNode = $doc->createElement( 'captcha', xrowECommerce::encodeString( $captcha ) );
+        $recaptacheNode = $doc->createElement( 'captcha', xrowECommerce::encodeString( $recaptcha ) );
         $root->appendChild( $recaptacheNode );
         if ( ! empty( $payment_method ) )
         {
@@ -1189,31 +1190,31 @@ if ( $module->isCurrentAction( 'Store' ) )
         $tpl->setVariable( 'input_error', true );
     }
 }
-$tpl->setVariable( 'company_name', $company_name );
-$tpl->setVariable( 'company_additional', $company_additional );
-$tpl->setVariable( 'tax_id', $tax_id );
+$tpl->setVariable( 'company_name', (isset($company_name)) ? $company_name : '');
+$tpl->setVariable( 'company_additional', (isset($company_additional)) ? $company_additional : '' );
+$tpl->setVariable( 'tax_id', (isset($tax_id)) ? $tax_id : '' );
 if( !isset( $tax_id_valid ) )
     $tax_id_valid = 0;
 $tpl->setVariable( 'tax_id_valid', $tax_id_valid );
-$tpl->setVariable( 'first_name', $first_name );
-$tpl->setVariable( 'title', $title );
-$tpl->setVariable( 'mi', $mi );
-$tpl->setVariable( 'last_name', $last_name );
-$tpl->setVariable( 'email', $email );
+$tpl->setVariable( 'first_name', (isset($first_name)) ? $first_name : '' );
+$tpl->setVariable( 'title', (isset($title)) ? $title : '' );
+$tpl->setVariable( 'mi', (isset($mi)) ? $mi : '' );
+$tpl->setVariable( 'last_name', (isset($last_name)) ? $last_name : '' );
+$tpl->setVariable( 'email', (isset($email)) ? $email : '' );
 if( !isset( $newsletter ) )
     $newsletter = '';
-$tpl->setVariable( 'newsletter', $newsletter );
-$tpl->setVariable( 'address1', $address1 );
-$tpl->setVariable( 'address2', $address2 );
-$tpl->setVariable( 'city', $city );
-$tpl->setVariable( 'state', $state );
-$tpl->setVariable( 'zip', $zip );
-$tpl->setVariable( 'country', $country );
-$tpl->setVariable( 'phone', $phone );
-$tpl->setVariable( 'fax', $fax );
+$tpl->setVariable( 'newsletter', (isset($newsletter)) ? $newsletter : '' );
+$tpl->setVariable( 'address1', (isset($address1)) ? $address1 : '' );
+$tpl->setVariable( 'address2', (isset($address2)) ? $address2 : '' );
+$tpl->setVariable( 'city', (isset($city)) ? $city : '' );
+$tpl->setVariable( 'state', (isset($state)) ? $state : '' );
+$tpl->setVariable( 'zip', (isset($zip)) ? $zip : '' );
+$tpl->setVariable( 'country', (isset($country)) ? $country : '' );
+$tpl->setVariable( 'phone', (isset($phone)) ? $phone : '' );
+$tpl->setVariable( 'fax', (isset($fax)) ? $fax : '' );
 if( !isset( $remote_address ) )
     $remote_address = '';
-$tpl->setVariable( 'client_ip', $remote_address );
+$tpl->setVariable( 'client_ip', (isset($remote_address)) ? $remote_address : '' );
 
 // default value for shipping
 if ( ! isset( $shipping ) )
@@ -1221,44 +1222,44 @@ if ( ! isset( $shipping ) )
     $shipping = '1';
 }
 
-$tpl->setVariable( 'shipping', $shipping );
+$tpl->setVariable( 'shipping', (isset($shipping)) ? $shipping : '' );
 
-$tpl->setVariable( 'shippingtype', $shippingtype );
+$tpl->setVariable( 'shippingtype', (isset($shippingtype)) ? $shippingtype : '' );
 if ( isset( $payment_method ) )
 {
     $tpl->setVariable( 'payment_method', $payment_method );
 
 }
-$tpl->setVariable( 'recaptcha', $recaptcha );
-$tpl->setVariable( 's_company_name', $s_company_name );
-$tpl->setVariable( 's_company_additional', $s_company_additional );
-$tpl->setVariable( 's_title', $s_title );
-$tpl->setVariable( 's_first_name', $s_first_name );
-$tpl->setVariable( 's_mi', $s_mi );
-$tpl->setVariable( 's_last_name', $s_last_name );
-$tpl->setVariable( 's_email', $s_email );
-$tpl->setVariable( 's_address1', $s_address1 );
-$tpl->setVariable( 's_address2', $s_address2 );
-$tpl->setVariable( 's_city', $s_city );
-$tpl->setVariable( 's_state', $s_state );
-$tpl->setVariable( 's_zip', $s_zip );
-$tpl->setVariable( 's_country', $s_country );
-$tpl->setVariable( 's_phone', $s_phone );
-$tpl->setVariable( 's_fax', $s_fax );
+$tpl->setVariable( 'recaptcha', (isset($recaptcha)) ? $recaptcha : '' );
+$tpl->setVariable( 's_company_name', (isset($s_company_name)) ? $s_company_name : '' );
+$tpl->setVariable( 's_company_additional', (isset($s_company_additional)) ? $s_company_additional : '' );
+$tpl->setVariable( 's_title', (isset($s_title)) ? $s_title : '' );
+$tpl->setVariable( 's_first_name', (isset($s_first_name)) ? $s_first_name : '' );
+$tpl->setVariable( 's_mi', (isset($s_mi)) ? $s_mi : '' );
+$tpl->setVariable( 's_last_name', (isset($s_last_name)) ? $s_last_name : '' );
+$tpl->setVariable( 's_email', (isset($s_email)) ? $s_email : '' );
+$tpl->setVariable( 's_address1', (isset($s_address1)) ? $s_address1 : '' );
+$tpl->setVariable( 's_address2', (isset($s_address2)) ? $s_address2 : '' );
+$tpl->setVariable( 's_city', (isset($s_city)) ? $s_city : '' );
+$tpl->setVariable( 's_state', (isset($s_state)) ? $s_state : '' );
+$tpl->setVariable( 's_zip', (isset($s_zip)) ? $s_zip : '' );
+$tpl->setVariable( 's_country', (isset($s_country)) ? $s_country : '' );
+$tpl->setVariable( 's_phone', (isset($s_phone)) ? $s_phone : '' );
+$tpl->setVariable( 's_fax', (isset($s_fax)) ? $s_fax : '' );
 if( !isset( $errors ) )
     $errors = '';
 $tpl->setVariable( 'errors', $errors );
-$tpl->setVariable( 'coupon_code', $coupon_code );
-$tpl->setVariable( 'reference', $reference );
-$tpl->setVariable( 'message', $message );
-$tpl->setVariable( 'no_partial_delivery', $no_partial_delivery );
+$tpl->setVariable( 'coupon_code', (isset($coupon_code)) ? $coupon_code : '' );
+$tpl->setVariable( 'reference', (isset($reference)) ? $reference : '' );
+$tpl->setVariable( 'message', (isset($message)) ? $message : '' );
+$tpl->setVariable( 'no_partial_delivery', (isset($no_partial_delivery)) ? $no_partial_delivery : '' );
 $tpl->setVariable( 'fields', $fields );
 $ini = eZINI::instance( 'site.ini' );
 $c_ini = eZINI::instance( 'country.ini' );
 $settings = $ini->getNamedArray();
 $locale = $settings["RegionalSettings"]["Locale"];
 $filepath = "extension/xrowecommerce/share/geonames.org/countryInfoJSON/" . $locale . "/countryInfoJSON";
-if ( file_get_contents( $filepath ) )
+if ( is_readable( $filepath ) )
 {
     $json = json_decode( file_get_contents( $filepath ) );
     if( isset( $json->geonames ) )
