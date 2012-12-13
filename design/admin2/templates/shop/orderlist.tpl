@@ -157,8 +157,14 @@
     {if $show_payment_status}
         <th class="wide">{'Payment status'|i18n( 'design/admin/shop/orderlist' )}</th>
     {/if}
+{* SD begin *}
+        <th class="wide">{'LJ Sent'|i18n( 'design/admin/shop/orderlist' )}</th>
+        <th class="wide">{'LJ Processed'|i18n( 'design/admin/shop/orderlist' )}</th>
+        <th class="wide">{'LJ Sent Date'|i18n( 'design/admin/shop/orderlist' )}</th>
+{* SD end *}
         <th class="wide">{'Actions'|i18n( 'design/admin/shop/orderlist' )}</th>
     </tr>
+    {def $expot_history_item = false()}
     {foreach $order_list as $order sequence array( bglight, bgdark ) as $seq}
 
     {set $currency = fetch( 'shop', 'currency', hash( 'code', $order.productcollection.currency_code ) )}
@@ -204,6 +210,7 @@
         {/if}
 
         </td>
+
            {if $show_payment_status}
            <td>
             {def $stati = hash( '0', 'unpaid'|i18n( 'design/admin/shop/orderlist' ),  '1', 'paid'|i18n( 'design/admin/shop/orderlist' ) )}
@@ -245,6 +252,25 @@
             {undef $payment $stati}
         </td>
         {/if}
+
+{* SD begin *}
+		{if is_set( $export_history[ $order.id ] )}
+		{set $expot_history_item = $export_history[ $order.id ]}
+		<input type="hidden" name="export_history[orders][]" value="{$order.id}" />
+        <td>
+			<input type="checkbox" name="export_history[sent][{$order.id}]" value="1"{if $expot_history_item.is_sent_lj} checked="checked"{/if}/>
+		</td>
+        <td>
+        	<input type="checkbox" name="export_history[processed][{$order.id}]" value="1"{if $expot_history_item.is_processed_lj} checked="checked"{/if}/>
+		</td>
+		<td>{$expot_history_item.sent_to_lj_at|datetime( 'custom', '%c' )}</td>
+		{else}
+        <td><input type="checkbox" disabled="disabled"/></td>
+        <td><input type="checkbox" disabled="disabled"/></td>
+        <td>&nbsp;</td>
+		{/if}
+{* SD end *}
+
         <td>
         <a href={concat( 'xrowecommerce/invoiceprint/', $order.id )|ezurl} target="_blank"><img src={'printer.png'|ezimage} height="28" width="28" alt="" title="{'Print invoice and packaging slip'|i18n( 'design/admin/shop/orderlist' )}" /></a>
         <a href={concat( 'xrowecommerce/shippingplanprint/', $order.id )|ezurl} target="_blank"><img src={'shipping_plan.png'|ezimage} height="28" width="28" alt="" title="{'Print shipping plan'|i18n( 'design/admin/shop/orderlist' )}" /></a>

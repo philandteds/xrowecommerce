@@ -91,6 +91,20 @@ if ( $http->hasPostVariable( 'ArchiveButton' ) )
 
 if ( $http->hasPostVariable( 'SaveOrderStatusButton' ) )
 {
+	if( $http->hasPostVariable( 'export_history' ) ) {
+		$newExportHistory = $http->postVariable( 'export_history' );
+		foreach( $newExportHistory['orders'] as $orderID ) {
+			$exportInfo = ezOrderExportHistory::fetchByOrderID( $orderID );
+			if( $exportInfo instanceof ezOrderExportHistory === false ) {
+				continue;
+			}
+
+			$exportInfo->setAttribute( 'is_sent_lj', (int) isset( $newExportHistory['sent'][ $orderID ] ) );
+			$exportInfo->setAttribute( 'is_processed_lj', (int) isset( $newExportHistory['processed'][ $orderID ] ) );
+			$exportInfo->store();
+		}
+	}
+
     if ( $http->hasPostVariable( 'PaymentStatusList' ) )
     {
         foreach ( $http->postVariable( 'PaymentStatusList' ) as $orderID => $statusID )
@@ -130,8 +144,22 @@ if ( $http->hasPostVariable( 'SaveOrderStatusButton' ) )
 $orderArray = eZOrder::active( true, $offset, $limit, $sortField, $sortOrder );
 $orderCount = eZOrder::activeCount();
 
+$orderIDs = array();
+foreach( $orderArray as $order ) {
+	$orderIDs[] = $order->attribute( 'id' );
+}
+
+$exportHistory    = array();
+$exportHistoryTmp = ezOrderExportHistory::fetchList(
+	array( 'order_id' => array( $orderIDs ) )
+);
+foreach( $exportHistoryTmp as $item ) {
+	$exportHistory[ $item->attribute( 'order_id' ) ] = $item;
+}
+
 $tpl->setVariable( 'order_list', $orderArray );
 $tpl->setVariable( 'order_list_count', $orderCount );
+$tpl->setVariable( 'export_history', $exportHistory );
 $tpl->setVariable( 'limit', $limit );
 
 $viewParameters = array( 
