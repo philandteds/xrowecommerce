@@ -5,6 +5,7 @@ class xrowCoupon
 
     function xrowCoupon( $code = false )
 	{
+		$code = str_replace( '%', '', $code );
 		$this->code = strtoupper( $code );
 	}
 
