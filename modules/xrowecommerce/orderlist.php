@@ -149,17 +149,8 @@ foreach( $orderArray as $order ) {
 	$orderIDs[] = $order->attribute( 'id' );
 }
 
-$exportHistory    = array();
-$exportHistoryTmp = ezOrderExportHistory::fetchList(
-	array( 'order_id' => array( $orderIDs ) )
-);
-foreach( $exportHistoryTmp as $item ) {
-	$exportHistory[ $item->attribute( 'order_id' ) ] = $item;
-}
-
 $tpl->setVariable( 'order_list', $orderArray );
 $tpl->setVariable( 'order_list_count', $orderCount );
-$tpl->setVariable( 'export_history', $exportHistory );
 $tpl->setVariable( 'limit', $limit );
 
 $viewParameters = array( 

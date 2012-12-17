@@ -254,8 +254,18 @@
         {/if}
 
 {* SD begin *}
-		{if is_set( $export_history[ $order.id ] )}
-		{set $expot_history_item = $export_history[ $order.id ]}
+		{set $expot_history_item = fetch(
+			'orders_export', 'fetch_export_history',
+			hash(
+				'conditions', hash( 'order_id', $order.id ),
+				'limitations', hash(
+					'offset', 0,
+					'length', 1
+				)
+			)
+		)}
+		{if gt( $expot_history_item|count(), 0 )}
+		{set $expot_history_item = $expot_history_item[0]}
 		<input type="hidden" name="export_history[orders][]" value="{$order.id}" />
         <td>
 			<input type="checkbox" name="export_history[sent][{$order.id}]" value="1"{if $expot_history_item.is_sent_lj} checked="checked"{/if}/>
