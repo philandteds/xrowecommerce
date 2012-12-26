@@ -159,6 +159,11 @@ $ViewList["archiveorder"] = array(
     "default_navigation_part" => 'ezshopnavigationpart',
     "params" => array() );
 
+$ViewList["set_payment_gateway"] = array(
+    "functions" => array( 'buy' ),
+    "script" => "set_payment_gateway.php",
+    "params" => array( "Gateway" ) );
+
 $ViewList["json"] = array( "script" => "json.php", "params" => array ( 'object', 'method' ) );
 
 

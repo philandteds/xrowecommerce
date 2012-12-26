@@ -295,11 +295,20 @@ class xrowPaymentGatewayType extends eZWorkflowEventType
             {
             	$gateway = $params['paymentgateway'];
             }
+            elseif ( $http->hasSessionVariable( 'paymentgateway' ) ) {
+            	$type = $http->sessionVariable( 'paymentgateway' );
+        	    $params = $process->parameterList();
+                $params['paymentgateway'] = $type;
+                $process->setParameters( $params );
+                $process->store();
+                $http->removeSessionVariable( 'paymentgateway' );
+                return $type;
+            }
             else 
             {
                 $selectedGatewaysTypes = explode( ',', $event->attribute( 'data_text3' ) );
-        	if ( count( $selectedGatewaysTypes ) == 1 && $selectedGatewaysTypes[0] != - 1 )
-        	{
+        		if ( count( $selectedGatewaysTypes ) == 1 && $selectedGatewaysTypes[0] != - 1 )
+        		{
             	    $params = $process->parameterList();
                     $params['paymentgateway'] = $selectedGatewaysTypes[0];
                     $process->setParameters( $params );

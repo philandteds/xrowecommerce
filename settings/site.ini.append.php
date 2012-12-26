@@ -4,6 +4,7 @@
 PolicyOmitList[]=xrowecommerce/register
 PolicyOmitList[]=xrowecommerce/directorder
 PolicyOmitList[]=xrowecommerce/json
+PolicyOmitList[]=xrowecommerce/set_payment_gateway
 
 [TemplateSettings]
 ExtensionAutoloadPath[]=xrowecommerce
