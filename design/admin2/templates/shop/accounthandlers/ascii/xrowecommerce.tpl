@@ -85,7 +85,7 @@
         {/switch}
         {/if}
 {else}
-{'Payment method'|i18n('extension/xrowecommerce')}: {'Unkown'|i18n('extension/xrowecommerce')}
+{'Payment method'|i18n('extension/xrowecommerce')}: {'Unknown'|i18n('extension/xrowecommerce')}
 
 {/if}
 {if and(ezini( 'Settings', 'Reference', 'xrowecommerce.ini' )|eq( 'enabled' ), $order.account_information.reference)}
