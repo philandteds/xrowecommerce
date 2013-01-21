@@ -314,7 +314,7 @@
                 {else}
                     <tr>
                         <th>{'Payment method'|i18n('extension/xrowecommerce')}:</th>
-                        <td>{'Unkown'|i18n('extension/xrowecommerce')}</td>
+                        <td>{'Unknow'|i18n('extension/xrowecommerce')}</td>
                     </tr>
                 {/if}
             {/if}
