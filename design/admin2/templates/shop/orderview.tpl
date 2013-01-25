@@ -112,11 +112,13 @@ else
 </tr>
 
 {section name=OrderItem loop=$order.order_items show=$order.order_items sequence=array(bglight,bgdark)}
+{if ne( $OrderItem:item.type, 'siteaccess' )}
 <tr>
-        <td>{$OrderItem:item.description}:</td>
+        <td>{if eq( $OrderItem:item.type, 'ezcustomshipping' )}{'Shipping'|i18n( 'design/admin/shop/orderview' )}{else}{$OrderItem:item.description}{/if}:</td>
         <td class="number" align="right">{$OrderItem:item.price_ex_vat|l10n( 'currency', $locale, $symbol )}</td>
         <td class="number" align="right">{$OrderItem:item.price_inc_vat|l10n( 'currency', $locale, $symbol )}</td>
 </tr>
+{/if}
 {/section}
 <tr>
     <td><b>{'Order total'|i18n( 'design/admin/shop/orderview' )}</b></td>
