@@ -77,7 +77,7 @@
         {if $order.account_information.state}
         <tr>
             <th>{'State'|i18n('extension/xrowecommerce')}:</th>
-            <td>{$order.account_information.state|wash}</td>
+            <td>{$order.account_information.state|wash()|get_state( $order.account_information.country )}</td>
         </tr>
         {/if}
         <tr>
