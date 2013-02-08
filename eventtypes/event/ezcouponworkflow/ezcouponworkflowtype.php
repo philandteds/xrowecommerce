@@ -52,8 +52,11 @@ class eZCouponWorkflowType extends eZWorkflowEventType
         $coupon = new xrowCoupon( $event->attribute( "data_text1" ) );
         $attribute = $coupon->fetchAttribute();
         $data = $attribute->content();
+	$discount_types = array('%','','Free Shipping');
 
-        $description = $ini->variable( "CouponSettings", "Description" ) . " " . $event->attribute( "data_text1" );
+        $description = $ini->variable( "CouponSettings", "Description" ) . 
+        								" ( " . $event->attribute( "data_text1" ) . " : " 
+        										. $data['discount'] . $discount_types[$data['discount_type']] . " )";
 
         $parameters = $process->attribute( 'parameter_list' );
         $orderID = $parameters['order_id'];
