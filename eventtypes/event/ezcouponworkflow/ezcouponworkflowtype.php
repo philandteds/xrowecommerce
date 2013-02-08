@@ -17,8 +17,8 @@ class eZCouponWorkflowType extends eZWorkflowEventType
         $this->setTriggerTypes( array(
             'shop' => array(
                 'confirmorder' => array(
-                    'before' 
-                )), 
+                    'before'
+                )),
             'recurringorders' => array(
                 'checkout' => array(
                     'before'
@@ -39,25 +39,25 @@ class eZCouponWorkflowType extends eZWorkflowEventType
         {
             $process->Template = array();
             $process->Template['templateName'] = 'design:workflow/coupon.tpl';
-            $process->Template['templateVars'] = array( 
-                'process' => $process , 
-                'event' => $event , 
-                'base' => eZCouponWorkflowType::BASE 
+            $process->Template['templateVars'] = array(
+                'process' => $process ,
+                'event' => $event ,
+                'base' => eZCouponWorkflowType::BASE
             );
-            
+
             return eZWorkflowType::STATUS_FETCH_TEMPLATE_REPEAT;
-        
+
         }
         $ini = eZINI::instance( 'xrowcoupon.ini' );
         $coupon = new xrowCoupon( $event->attribute( "data_text1" ) );
         $attribute = $coupon->fetchAttribute();
         $data = $attribute->content();
-        
+
         $description = $ini->variable( "CouponSettings", "Description" ) . " " . $event->attribute( "data_text1" );
-        
+
         $parameters = $process->attribute( 'parameter_list' );
         $orderID = $parameters['order_id'];
-        
+
         $order = eZOrder::fetch( $orderID );
         $orderItems = $order->attribute( 'order_items' );
         $addShipping = true;
@@ -85,19 +85,7 @@ class eZCouponWorkflowType extends eZWorkflowEventType
         }
         if ( $addShipping )
         {
-            $price = 0;
-            if ( $data['discount_type'] == ezCouponType::DISCOUNT_TYPE_FLAT )
-            {
-                $price = $data['discount'] * - 1;
-            }
-            elseif ( $data['discount_type'] == ezCouponType::DISCOUNT_TYPE_FREE_SHIPPING )
-            {
-                $price = $shippingvalue * - 1;
-            }
-            else
-            {
-                $price = $order->attribute( 'product_total_ex_vat' ) * $data['discount'] / 100 * - 1;
-            }
+            $price = self::getProductDiscountAmount( $order, $data );
             // Remove any existing order coupon before appending a new item
             $list = eZOrderItem::fetchListByType( $orderID, 'coupon' );
             if ( count( $list ) > 0 )
@@ -106,25 +94,37 @@ class eZCouponWorkflowType extends eZWorkflowEventType
                 {
                     $item->remove();
                 }
-            
+
             }
-            $orderItem = new eZOrderItem( array( 
-                'order_id' => $orderID , 
-                'description' => $description , 
-                'price' => $price , 
-                'type' => 'coupon' , 
-                'vat_is_included' => true , 
-                'vat_type_id' => 1 
-            ) );
-            $orderItem->store();
+            if( $price > 0 ) {
+	            $orderItem = new eZOrderItem( array(
+	                'order_id' => $orderID ,
+	                'description' => $description ,
+	                'price' => round( $price, 2 ) * -1,
+	                'type' => 'coupon' ,
+	                'vat_is_included' => true ,
+	                'vat_type_id' => 1
+	            ) );
+	            $orderItem->store();
+            } else {
+				$process->Template = array();
+				$process->Template['templateName'] = 'design:workflow/coupon_not_applicable.tpl';
+				$process->Template['templateVars'] = array(
+					'process' => $process,
+					'event'   => $event,
+					'base'    => eZCouponWorkflowType::BASE
+				);
+
+				return eZWorkflowType::STATUS_FETCH_TEMPLATE_REPEAT;            	
+            }
         }
-        
+
         return eZWorkflowEventType::STATUS_ACCEPTED;
     }
 
     function fetchInput( &$http, $base, &$event, &$process )
     {
-        
+
         $var = $base . "_code_" . $event->attribute( "id" );
         $cancel = $base . "_CancelButton_" . $event->attribute( "id" );
         $select = $base . "_SelectButton_" . $event->attribute( "id" );
@@ -149,12 +149,12 @@ class eZCouponWorkflowType extends eZWorkflowEventType
             }
         }
         $parameters = $process->attribute( 'parameter_list' );
-        
+
         $order = eZOrder::fetch( $parameters['order_id'] );
         if ( $order instanceof eZOrder )
         {
             $xml = new SimpleXMLElement( $order->attribute( 'data_text_1' ) );
-            
+
             if ( $xml != null )
             {
                 $code = (string) $xml->coupon_code;
@@ -179,6 +179,63 @@ class eZCouponWorkflowType extends eZWorkflowEventType
             }
         }
     }
+
+	public static function getProductDiscountAmount( eZOrder $order, $couponData ) {
+		$discountableAmount = 0;
+		$discountAmount     = 0;
+
+		$products = $order->attribute( 'product_items' );
+		foreach( $products as $product ) {
+			$options = $product['item_object']->attribute( 'option_list' );
+			if( count( $options ) === 0 ) {
+				// SKU is not selected, so it is not MK poduct
+				continue;
+			}
+
+			$object = $product['item_object']->attribute( 'contentobject' );
+			$SKU    = $options[0]->attribute( 'value' );
+			if( self::isSaleProduct( $object, $SKU ) === false ) {
+				$discountableAmount += $product['total_price_ex_vat'];
+			}
+		}
+
+		if( $discountableAmount > 0 ) {
+			if( $couponData['discount_type'] == ezCouponType::DISCOUNT_TYPE_FLAT ) {
+				$discountAmount = $couponData['discount'];
+			} elseif( $couponData['discount_type'] == ezCouponType::DISCOUNT_TYPE_FREE_SHIPPING ) {
+				$discountAmount = $shippingvalue;
+			} else {
+				$discountAmount = $discountableAmount * $couponData['discount'] / 100;
+			}
+		}
+
+		return $discountAmount;
+	}
+
+	public static function isSaleProduct( eZContentObject $product, $SKU ) {
+		$dataMap = $product->attribute( 'data_map' );
+		if( (bool) $dataMap['override_price']->attribute( 'content' ) ) {
+			return true;
+		}
+
+		$currentRegion = eZLocale::instance()->LocaleINI['default']->variable( 'RegionalSettings', 'Country' );
+		$db = eZDB::instance();
+		$q  = '
+			SELECT product_price.*
+			FROM product_price
+			WHERE
+				product_price.LongCode = "' . $db->escapeString( $SKU ) . '"
+				AND product_price.Region = "' . $db->escapeString( $currentRegion ) . '"';
+		$r  = $db->arrayQuery( $q );
+		if(
+			count( $r ) > 0
+			&& (bool) $r[0]['Override']
+		) {
+			return true;
+		}
+
+		return false;
+	}
 }
 
 eZWorkflowEventType::registerEventType( eZCouponWorkflowType::WORKFLOW_TYPE_STRING, "ezcouponworkflowtype" );
