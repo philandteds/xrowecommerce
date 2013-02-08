@@ -221,7 +221,7 @@
     {/if}
     <table id="additional-orderinformation-table" class="order_box"
         border="0" cellspacing="0" cellpadding="0">
-        <caption>{"Additional Orderinformation"|i18n("extension/xrowecommerce")}</caption>
+        <caption>{"Additional Order Information"|i18n("extension/xrowecommerce")}</caption>
         {if ezini( 'Fields', 'NoPartialDelivery', 'xrowecommerce.ini' ).enabled|eq('true')}
         <tr>
             <th>{'Partial delivery'|i18n('extension/xrowecommerce')}:</th>
