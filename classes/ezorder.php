@@ -1567,7 +1567,8 @@ class eZOrder extends eZPersistentObject
     }
 
 	public function getOrderNr() {
-		return $this->attribute( 'id' );
+		$id = $this->attribute( 'id' );
+		return $id !== null ? $id : 0;
 	}
 
     /*!
