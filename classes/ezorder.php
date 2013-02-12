@@ -373,14 +373,14 @@ class eZOrder extends eZPersistentObject
             {
                 $priceExVAT = $price / ( 100 + $vatValue ) * 100;
                 $priceIncVAT = $price;
-                
+
             }
             else
             {
                 $priceExVAT = $price;
                 $priceIncVAT = $price * ( 100 + $vatValue ) / 100;
             }
-            
+
             $count = $productItem['item_count'];
             $realPricePercent = ( 100 - $productItem['discount'] ) / 100;
             $totalPriceExVAT = round( $count * $priceExVAT * $realPricePercent, 2 );
@@ -401,7 +401,7 @@ class eZOrder extends eZPersistentObject
                 'product' => &$contentObjectIDHash[$currentContentObjectID],
                 'product_info' => $productInfo
             );
-        
+
         // Fetching all ContentObject ids in one query, filling the hash with the corresponding ContentObject
         foreach ( eZContentObject::fetchList( true, array( "id" => array( array_keys( $contentObjectIDHash ) ) ) ) as $contentObject )
         {
@@ -802,7 +802,7 @@ class eZOrder extends eZPersistentObject
                 $priceExVAT = $price;
                 $priceIncVAT = $price * ( 100 + $vatValue ) / 100;
             }
-            
+
             $count = $productItem->attribute( 'item_count' );
             $discountPercent = $productItem->attribute( 'discount' );
             $realPricePercent = ( 100 - $discountPercent ) / 100;
@@ -1567,8 +1567,10 @@ class eZOrder extends eZPersistentObject
     }
 
 	public function getOrderNr() {
-		$id = $this->attribute( 'id' );
-		return $id !== null ? $id : 0;
+		$id   = $this->attribute( 'id' );
+		$shop = eZINI::instance( 'xrowecommerce.ini' )->variable( 'Settings', 'Shop' );
+
+		return $id !== null ? $shop . '_' . $id : 0;
 	}
 
     /*!
