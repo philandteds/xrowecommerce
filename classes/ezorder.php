@@ -1570,7 +1570,7 @@ class eZOrder extends eZPersistentObject
 		$id   = $this->attribute( 'id' );
 		$shop = eZINI::instance( 'xrowecommerce.ini' )->variable( 'Settings', 'Shop' );
 
-		return $id !== null ? $shop . '_' . $id : 0;
+		return $id !== null ? $shop . $id : 0;
 	}
 
     /*!
