@@ -54,8 +54,8 @@ class eZCouponWorkflowType extends eZWorkflowEventType
         $data = $attribute->content();
 	$discount_types = array('%','','Free Shipping');
 
-        $description = $ini->variable( "CouponSettings", "Description" ) . 
-        								" ( " . $event->attribute( "data_text1" ) . " : " 
+        $description = $ini->variable( "CouponSettings", "Description" ) .
+        								" ( " . $event->attribute( "data_text1" ) . " : "
         										. $data['discount'] . $discount_types[$data['discount_type']] . " )";
 
         $parameters = $process->attribute( 'parameter_list' );
@@ -88,7 +88,7 @@ class eZCouponWorkflowType extends eZWorkflowEventType
         }
         if ( $addShipping )
         {
-            $price = self::getProductDiscountAmount( $order, $data );
+            $price = self::getProductDiscountAmount( $order, $data, $coupon->fetchObject() );
             // Remove any existing order coupon before appending a new item
             $list = eZOrderItem::fetchListByType( $orderID, 'coupon' );
             if ( count( $list ) > 0 )
@@ -118,7 +118,7 @@ class eZCouponWorkflowType extends eZWorkflowEventType
 					'base'    => eZCouponWorkflowType::BASE
 				);
 
-				return eZWorkflowType::STATUS_FETCH_TEMPLATE_REPEAT;            	
+				return eZWorkflowType::STATUS_FETCH_TEMPLATE_REPEAT;
             }
         }
 
@@ -183,9 +183,13 @@ class eZCouponWorkflowType extends eZWorkflowEventType
         }
     }
 
-	public static function getProductDiscountAmount( eZOrder $order, $couponData ) {
+	public static function getProductDiscountAmount( eZOrder $order, $couponData, $couponObject ) {
 		$discountableAmount = 0;
 		$discountAmount     = 0;
+
+		$couponDataMap   = $couponObject->attribute( 'data_map' );
+		$allowedProducts = $couponDataMap['products']->attribute( 'content' );
+		$allowedProducts = $allowedProducts['relation_list'];
 
 		$products = $order->attribute( 'product_items' );
 		foreach( $products as $product ) {
@@ -195,9 +199,30 @@ class eZCouponWorkflowType extends eZWorkflowEventType
 				continue;
 			}
 
+			$isDiscountable = true;
 			$object = $product['item_object']->attribute( 'contentobject' );
 			$SKU    = $options[0]->attribute( 'value' );
-			if( self::isSaleProduct( $object, $SKU ) === false ) {
+
+			// Check if product could be discounted
+			if( count( $allowedProducts ) > 0 ) {
+				$isDiscountable = false;
+
+				$nodes = $object->attribute( 'assigned_nodes' );
+				foreach( $nodes as $node ) {
+					$pathNodeIDs = explode( '/', $node->attribute( 'path_string' ) );
+					foreach( $allowedProducts as $allowedProduct ) {
+						if( in_array( $allowedProduct['node_id'], $pathNodeIDs ) ) {
+							$isDiscountable = true;
+							break 2;
+						}
+					}
+				}
+			}
+			if( self::isSaleProduct( $object, $SKU ) ) {
+				$isDiscountable = false;
+			}
+
+			if( $isDiscountable ) {
 				$discountableAmount += $product['total_price_ex_vat'];
 			}
 		}

@@ -28,6 +28,24 @@ class xrowCoupon
         }
     }
 
+    public function fetchObject()
+    {
+        $db = eZDB::instance();
+        $result = $db->arrayQuery( "SELECT * FROM ezcontentobject_attribute e, ezcontentobject e1
+                            WHERE e1.current_version = e.version
+                            AND e.contentobject_id = e1.id
+                            AND e.data_type_string = 'ezcoupon' AND e1.status = 1
+                            AND e.data_text like ( '".$db->escapeString( $this->code ).";%');" );
+        if ( isset( $result[0]['contentobject_id'] ) )
+        {
+            return eZContentObject::fetch( $result[0]['contentobject_id'] );
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public function isValid()
     {
         $attribute = $this->fetchAttribute();
