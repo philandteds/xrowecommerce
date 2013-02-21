@@ -187,16 +187,37 @@ class eZCouponWorkflowType extends eZWorkflowEventType
 		$discountableAmount = 0;
 		$discountAmount     = 0;
 
-		$couponDataMap   = $couponObject->attribute( 'data_map' );
-		$allowedProducts = $couponDataMap['products']->attribute( 'content' );
-		$allowedProducts = $allowedProducts['relation_list'];
+		$couponDataMap     = $couponObject->attribute( 'data_map' );
+		$allowedProducts   = $couponDataMap['products']->attribute( 'content' );
+		$allowedProducts   = $allowedProducts['relation_list'];
+		$ageCategories     = eZINI::instance( 'mk.ini' )->variableArray( 'SizeSettings', 'CategorySizes' );
+		$allowedCategories = array();
+		foreach( $allowedProducts as $allowedProduct ) {
+			if( $allowedProduct['contentclass_identifier'] === 'product_category' ) {
+				$allowedCategories[] = eZContentObject::fetch( $allowedProduct['contentobject_id'] );
+			}
+		}
+		$allowedSizes      = array();
+		foreach( $allowedCategories as $category ) {
+			$dataMap    = $category->attribute( 'data_map' );
+			$identifier = $dataMap['identifier']->attribute( 'content' );
+			if( isset( $ageCategories[ $identifier ] ) ) {
+				$allowedSizes = array_merge( $allowedSizes, $ageCategories[ $identifier ] );
+			}
+		}
+		$allowedSizes = array_unique( $allowedSizes );
 
 		$products = $order->attribute( 'product_items' );
 		foreach( $products as $product ) {
-			$options = $product['item_object']->attribute( 'option_list' );
+			$productSize = null;
+			$options     = $product['item_object']->attribute( 'option_list' );
 			if( count( $options ) === 0 ) {
 				// SKU is not selected, so it is not MK poduct
 				continue;
+			}
+			$tmp = explode( '_', $options[0]->attribute( 'value' ) );
+			if( count( $tmp ) > 2 ) {
+				$productSize = $tmp[ count( $tmp ) - 2 ];
 			}
 
 			$isDiscountable = true;
@@ -204,6 +225,7 @@ class eZCouponWorkflowType extends eZWorkflowEventType
 			$SKU    = $options[0]->attribute( 'value' );
 
 			// Check if product could be discounted
+			// filter by locations and size
 			if( count( $allowedProducts ) > 0 ) {
 				$isDiscountable = false;
 
@@ -211,7 +233,13 @@ class eZCouponWorkflowType extends eZWorkflowEventType
 				foreach( $nodes as $node ) {
 					$pathNodeIDs = explode( '/', $node->attribute( 'path_string' ) );
 					foreach( $allowedProducts as $allowedProduct ) {
-						if( in_array( $allowedProduct['node_id'], $pathNodeIDs ) ) {
+						if(
+							in_array( $allowedProduct['node_id'], $pathNodeIDs )
+							&& (
+								count( $allowedSizes ) === 0
+								|| in_array( $productSize, $allowedSizes )
+							)
+						) {
 							$isDiscountable = true;
 							break 2;
 						}
