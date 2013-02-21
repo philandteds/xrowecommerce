@@ -91,7 +91,7 @@ class xrowECommerceConfirmOrderHandler
                 {
                     $mail = new eZMail();
                     $mail->setReceiver( $receiver );
-                    $mail->setSender( $clientEmail );
+                    $mail->setSender( $emailSender );
                     $mail->setSubject( $subject );
                     $mail->setBody( $templateResult );
             if ( $htmlMode == 'enabled' )
