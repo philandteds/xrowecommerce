@@ -231,6 +231,14 @@ class eZOrder extends eZPersistentObject
                             ezorder.is_temporary = '0' AND
                             ezcontentobject.id = ezorder.user_id
                       ORDER BY ezcontentobject.name $sortOrder";
+            $query = "SELECT ezorder.*
+                      FROM
+                            ezorder,
+                            ezcontentobject
+                      WHERE
+                            ".eZOrder::getShowOrdersQuery( $show, "ezorder" )." AND
+                            ezcontentobject.id = ezorder.user_id
+                      ORDER BY ezcontentobject.name $sortOrder";
             $orderArray = $db->arrayQuery( $query, $db_params );
             if ( $asObject )
             {
@@ -249,7 +257,7 @@ class eZOrder extends eZPersistentObject
         }
         else
         {
-            $where['is_temporary'] = 0;
+            //$where['is_temporary'] = 0;
             if ( $show != eZOrder::SHOW_ALL )
             {
                 $where['is_archived'] = $show;
@@ -272,6 +280,7 @@ class eZOrder extends eZPersistentObject
         $db = eZDB::instance();
 
         $query = 'SELECT count( * ) AS count FROM ezorder WHERE ' . eZOrder::getShowOrdersQuery( $show ) . ' AND is_temporary=\'0\'';
+        $query = 'SELECT count( * ) AS count FROM ezorder WHERE ' . eZOrder::getShowOrdersQuery( $show );
         $countArray = $db->arrayQuery( $query );
         return isset( $countArray[0]['count'] ) ? $countArray[0]['count'] : 0;
     }
