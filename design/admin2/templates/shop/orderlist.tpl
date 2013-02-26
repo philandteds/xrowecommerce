@@ -149,6 +149,7 @@
     <tr>
         <th class="tight"><img src={'toggle-button-16x16.gif'|ezimage} alt="{'Invert selection.'|i18n( 'design/admin/shop/orderlist' )}" title="{'Invert selection.'|i18n( 'design/admin/shop/orderlist' )}" onclick="ezjs_toggleCheckboxes( document.orderlist, 'OrderIDArray[]' ); return false;" /></th>
         <th class="tight">{'ID'|i18n( 'design/admin/shop/orderlist' )}</th>
+        <th class="wide">{'Temporary'|i18n( 'design/admin/shop/orderlist' )}</th>
         <th class="wide">{'Customer'|i18n( 'design/admin/shop/orderlist' )}</th>
         <th class="tight">{'Total (ex. VAT)'|i18n( 'design/admin/shop/orderlist' )}</th>
         <th class="tight">{'Total (inc. VAT)'|i18n( 'design/admin/shop/orderlist' )}</th>
@@ -179,6 +180,9 @@
     <tr class="{$seq}">
         <td><input type="checkbox" name="OrderIDArray[]" value="{$order.id}" title="{'Select order for removal.'|i18n( 'design/admin/shop/orderlist' )}" /></td>
         <td><a href={concat( '/shop/orderview/', $order.id, '/' )|ezurl}>{$order.order_nr}</a></td>
+        <td>
+			<input type="checkbox" name="orders_temporary_status[{$order.id}]" value="1"{if $order.is_temporary} checked="checked"{/if} disabled="disabled"/>
+		</td>
         <td>
         {if is_null($order.account_name)}
             <s><i>{'( removed )'|i18n( 'design/admin/shop/orderlist' )}</i></s>
