@@ -80,8 +80,7 @@ class eZCouponWorkflowType extends eZWorkflowEventType
             }
         }
         $shippingini = eZINI::instance( 'shipping.ini' );
-        $shippinggateways = array();
-        $shippinggateways = $shippingini->variable( "Settings", "FreeShippingHandlingGateways" );
+        $shippinggateways = ($shippingini->hasVariable( "Settings", "FreeShippingHandlingGateways" )) ? $shippingini->variable( "Settings", "FreeShippingHandlingGateways" ) : array();
         if ( (count( $shippinggateways ) != '0') AND ( $data['discount_type'] == ezCouponType::DISCOUNT_TYPE_FREE_SHIPPING ) AND ( !in_array($shippintype, $shippinggateways) ) )
         {
             $addShipping = false;

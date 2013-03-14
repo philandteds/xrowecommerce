@@ -30,13 +30,13 @@ YUI().use( 'node', function(Y)
 {
     Y.on( 'domready', function() 
     {
-        if ( Y.one( '#country' ) )
+        if ( Y.one( '#country' ) && Y.one( '#state' ) )
         {
             updateSubdivisions( Y.one( '#country' ) );
         }
         if ( Y.one( '#shipping-checkbox' ) )
         {
-            if ( Y.one( '#s_country' ) )
+            if ( Y.one( '#s_country' ) && Y.one( '#s_state' ) )
             {
                 updateSubdivisions( Y.one( '#s_country' ) );
             }
@@ -44,9 +44,9 @@ YUI().use( 'node', function(Y)
             {
                 if ( Y.one( '#shipping-checkbox' ).get( 'checked' ) )
                 {
-                    updateShipping();
+                    //updateShipping();
                 }
-                if ( Y.one( '#country' ) )
+                if ( Y.one( '#country' ) && Y.one( '#state' ) )
                 {
                     updateSubdivisions( e.currentTarget );
                 }
@@ -55,9 +55,9 @@ YUI().use( 'node', function(Y)
             {
                 if ( !Y.one( '#shipping-checkbox' ).get( 'checked' ) )
                 {
-                    updateShipping();
+                    //updateShipping();
                 }
-                if ( Y.one( '#country' ) )
+                if ( Y.one( '#country' ) && Y.one( '#s_state' ) )
                 {
                 updateSubdivisions( e.currentTarget );
                 }
@@ -65,7 +65,7 @@ YUI().use( 'node', function(Y)
             Y.on( 'click', function( e )
             {
                 changeShipping();
-                updateShipping();
+                //updateShipping();
             }, '#shipping-checkbox');
         }
     });
@@ -162,7 +162,9 @@ function ezjson(uri, callback, args)
 
 function updateSubdivisions( country_node ) 
 {
-    YUI().use( 'node', 'io', 'io-ez', function( Y )
+    if ( country_node.get( 'selectedIndex' ) == -1 ) return false;
+    
+	YUI().use( 'node', 'io', 'io-ez', function( Y )
     {
         var country = country_node.get( 'options' ).item( country_node.get( 'selectedIndex' ) ).get( 'value' );
         if( Y.one( '#s_state' ) )
@@ -192,6 +194,8 @@ function updateSubdivisions( country_node )
                         {
                             var subdivision_node = Y.one( '#s_state' );
                         }
+                        
+                        if (subdivision_node == null) return false;
 
                         // If state is selected: get the old value for checking it later
                         if ( subdivision_node.get( 'selectedIndex' ) > 0 )
@@ -328,7 +332,7 @@ function updateShipping()
             }
             Y.log('INFO2: ' + Y.Lang.dump(Y.one('#shippingtype').get('options')));
         };
-        ezjson('getshipping?country=' + country, doit);
+        //ezjson('getshipping?country=' + country, doit);
     });
 }
 
@@ -574,7 +578,7 @@ function generatePopup(node, image, imagetext, doubleclick)
     });
 };
 
-function change()
+/* function change()
 {
     if (document.getElementById( 'shipping-checkbox' ).checked)
     {
@@ -584,4 +588,4 @@ function change()
     {
         document.getElementById( 'shippinginfo' ).style.display = 'block';
     }
-};
+}; */
