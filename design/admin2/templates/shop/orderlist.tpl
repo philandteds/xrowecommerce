@@ -219,11 +219,9 @@
            <td>
             {def $stati = hash( '0', 'unpaid'|i18n( 'design/admin/shop/orderlist' ),  '1', 'paid'|i18n( 'design/admin/shop/orderlist' ) )}
             {def $payment = fetch( 'xrowecommerce', 'payment_status', hash( 'id', $order.id ) )}
-            <select {if or( $payment.status|eq('1'), $payment.automatic_status )} disabled="disabled"{/if} name="PaymentStatusList[{$order.id}]" title="Payment via {$payment.payment_string}">
+            <select {if $payment.status|eq('1')} disabled="disabled"{/if} name="PaymentStatusList[{$order.id}]" title="Payment via {$payment.payment_string}">
             {foreach $stati as $key => $status}
-                <option value="{$key}"
-                    {if or($payment.automatic_status|eq(true) ,eq( $key, $payment.status ))}selected="selected"{/if}>
-                    {$status|wash}</option>
+                <option value="{$key}" {if eq( $key, $payment.status )}selected="selected"{/if}>{$status|wash}</option>
             {/foreach}
             </select>
             {if and(is_set($payment.data_array.errors), $payment.data_array.errors|count|gt(0))}
