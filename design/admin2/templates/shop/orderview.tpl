@@ -7,6 +7,13 @@
          symbol = $currency.symbol}
 {/if}
 
+{def $discounts = array()}
+{foreach $order.order_items as $order_item}
+	{if eq( $order_item.type, 'product_discount' )}
+		{set $discounts = $discounts|append( $order_item )}
+	{/if}
+{/if}
+
 <div class="context-block">
 
 <form action={concat("/shop/orderlist")|ezurl} method="post" name="Orderlist">
@@ -54,7 +61,14 @@
         <td class="number" align="right">{$ProductItem:item.vat_value}&nbsp;%</td>
         <td class="number" align="right">{$ProductItem:item.price_ex_vat|l10n( 'currency', $locale, $symbol )}</td>
         <td class="number" align="right">{$ProductItem:item.price_inc_vat|l10n( 'currency', $locale, $symbol )}</td>
-        <td class="number" align="right">{$ProductItem:item.discount_percent}&nbsp;%</td>
+        <td class="number" align="right">
+			{foreach $discounts as $discount}
+				{if eq( $discount.description, $ProductItem:item.id )}
+					{$discount.price|abs|l10n( 'currency', $locale, $symbol )}
+					{break}
+				{/if}
+			{/foreach}
+		</td>
         <td class="number" align="right">{$ProductItem:item.total_price_ex_vat|l10n( 'currency', $locale, $symbol )}</td>
         <td class="number" align="right">{$ProductItem:item.total_price_inc_vat|l10n( 'currency', $locale, $symbol )}</td>
 {*
@@ -112,14 +126,25 @@ else
 </tr>
 
 {section name=OrderItem loop=$order.order_items show=$order.order_items sequence=array(bglight,bgdark)}
-{if ne( $OrderItem:item.type, 'siteaccess' )}
+{if $OrderItem:item.type|eq( 'ezcustomshipping' )}
 <tr>
-        <td>{if eq( $OrderItem:item.type, 'ezcustomshipping' )}{'Shipping'|i18n( 'design/admin/shop/orderview' )}{else}{$OrderItem:item.description}{/if}:</td>
-        <td class="number" align="right">{$OrderItem:item.price_ex_vat|l10n( 'currency', $locale, $symbol )}</td>
-        <td class="number" align="right">{$OrderItem:item.price_inc_vat|l10n( 'currency', $locale, $symbol )}</td>
+    <td>{'Shipping'|i18n( 'design/admin/shop/orderview' )}</td>
+    <td class="number" align="right">{$OrderItem:item.price_ex_vat|l10n( 'currency', $locale, $symbol )}</td>
+    <td class="number" align="right">{$OrderItem:item.price_inc_vat|l10n( 'currency', $locale, $symbol )}</td>
 </tr>
 {/if}
 {/section}
+
+{def $total_discount = 0}
+{foreach $discounts as $discount}
+	{set $total_discount = $total_discount|sum( $discount.price )}
+{/foreach}
+<tr>
+    <td>{'Discount total'|i18n( 'design/admin/shop/orderview' )}</td>
+    <td class="number" align="right">{$total_discount|l10n( 'currency', $locale, $symbol )}</td>
+    <td class="number" align="right">{$total_discount|l10n( 'currency', $locale, $symbol )}</td>
+</tr>
+{undef $total_discount}
 <tr>
     <td><b>{'Order total'|i18n( 'design/admin/shop/orderview' )}</b></td>
     <td class="number" align="right"><b>{$order.total_ex_vat|l10n( 'currency', $locale, $symbol )}</b></td>
