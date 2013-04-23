@@ -145,6 +145,15 @@ else
     <td class="number" align="right">{$total_discount|l10n( 'currency', $locale, $symbol )}</td>
 </tr>
 {undef $total_discount}
+{section name=OrderItem loop=$order.order_items show=$order.order_items sequence=array(bglight,bgdark)}
+{if $OrderItem:item.type|eq( 'coupon' )}
+<tr>
+    <td>{'Discount code'|i18n( 'design/admin/shop/orderview' )}</td>
+    <td class="number" align="right">{$OrderItem:item.description}</td>
+    <td class="number" align="right">{$OrderItem:item.description}</td>
+</tr>
+{/if}
+{/section}
 <tr>
     <td><b>{'Order total'|i18n( 'design/admin/shop/orderview' )}</b></td>
     <td class="number" align="right"><b>{$order.total_ex_vat|l10n( 'currency', $locale, $symbol )}</b></td>
