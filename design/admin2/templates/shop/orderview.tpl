@@ -12,7 +12,7 @@
 	{if eq( $order_item.type, 'product_discount' )}
 		{set $discounts = $discounts|append( $order_item )}
 	{/if}
-{/if}
+{/foreach}
 
 <div class="context-block">
 

@@ -13,6 +13,31 @@ if ( $module->isCurrentAction( 'Cancel' ) )
 
 $user = eZUser::currentUser();
 
+$zipValidationRules = array(
+	'NZL' => array(
+		'reg_exp'           => '^\d{4}$',
+		'example'           => '1234'
+	),
+	'AUS' => array(
+		'reg_exp'           => '^\d{4}$',
+		'example'           => '1234'
+	),
+	'GBR' => array(
+		'reg_exp'           => '^[\d\w]{6,7}$',
+		'ignore_whitespace' => true,
+		'example'           => '12A45BC'
+	),
+	'CAN' => array(
+		'reg_exp'           => '^[\d\w]{6,7}$',
+		'ignore_whitespace' => true,
+		'example'           => '12A45BC'
+	),
+	'USA' => array(
+		'reg_exp'           => '(^\d{5}$)|(^\d{5}-\d{4}$)',
+		'example'           => '12345 or 12345-1234'
+	)
+);
+
 // Initialize variables
 $email = $title = $s_title = $first_name = $last_name = $shippingtype = $shipping = $s_email = $s_last_name = $s_first_name = $s_address1 = $s_address2 = $s_zip = $s_city = $s_state = $s_country = $s_phone = $s_mi = $address1 = $address2 = $zip = $city = $state = $country = $phone = $recaptcha = $mi = null;
 $userobject = $user->attribute( 'contentobject' );
@@ -470,6 +495,19 @@ if ( $module->isCurrentAction( 'Store' ) )
         {
             $inputIsValid = false;
             $fields['zip']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing zip is not given.' );
+        } else {
+        	if( isset( $zipValidationRules[ $country ] ) ) {
+        		$str  = $zip;
+        		$rule = $zipValidationRules[ $country ];
+
+        		$ignorWhitespace = isset( $rule['ignore_whitespace'] ) && (bool) $rule['ignore_whitespace'];
+        		if( $ignorWhitespace ) {
+        			$str = str_replace( ' ', '', $str );
+        		}
+        		if( preg_match( '/' . $rule['reg_exp'] . '/i', $str ) !== 1 ) {
+        			$fields['zip']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'Invalid zip code. Valid example:  ' ) . $rule['example'];
+        		}
+        	}
         }
     }
     
