@@ -20,32 +20,28 @@ AND email = "amy@harmonydayspa.com"
 ORDER BY e.email;
 */
 
-
-
 if ( is_numeric( $email ) )
 {
-    $userarray = $db->arrayQuery('SELECT distinct e.user_id, e.email FROM ezorder e
-    WHERE e.is_archived ="0" AND e.is_temporary ="0"
-    AND order_nr = "'.$email.'"
-    ORDER BY e.email;');
+    $userarray = $db->arrayQuery('SELECT DISTINCT o.id, o.user_id, o.email FROM ezorder o
+    WHERE o.id = "'.(int)$email.'"
+    ORDER BY o.email');
 }
 else
 {
-$userarray = $db->arrayQuery('SELECT distinct e.user_id, e.email FROM ezorder e
-    WHERE e.is_archived ="0" AND e.is_temporary ="0"
-    AND email = "'.$email.'"
+$userarray = $db->arrayQuery('SELECT distinct e.id, e.user_id, e.email FROM ezorder e
+    WHERE email = "'.$email.'"
     ORDER BY e.email;');
 }
+
 if ( count($userarray) == 1)
 {
-    $user_id=$userarray[0]["user_id"];
-    $Module->redirectTo( "/shop/customerorderview/$user_id/".$userarray[0]["email"] );
+    $order_id=$userarray[0]["id"];
+    $Module->redirectTo( "/shop/orderview/$order_id" );
 }
 elseif ( count($userarray) >= 2 )
 {
     $Module->redirectTo( "/customersearch/multiple/".$email );
 }
-
 elseif ( count($userarray) == 0 )
 {
     $Module->redirectTo( "/customersearch/multiple/".$email );

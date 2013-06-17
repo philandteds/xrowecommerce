@@ -32,7 +32,7 @@
 */
 $db = eZDB::instance();
 $email = $db->escapeString( $Params['email'] );
-$module = $Params['Module'];
+$Module = $Params['Module'];
 
 $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();

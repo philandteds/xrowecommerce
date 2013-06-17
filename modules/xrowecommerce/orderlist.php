@@ -32,7 +32,7 @@ $Module = $Params['Module'];
 $tpl = eZTemplate::factory();
 
 $offset = $Params['Offset'];
-$limit = 15;
+$limit  = (int) $Params['Limit'] > 0 ? (int) $Params['Limit'] : 15;
 
 if ( eZPreferences::value( 'admin_orderlist_sortfield' ) )
 {
@@ -70,6 +70,7 @@ if ( $http->hasPostVariable( 'RemoveButton' ) )
         if ( $orderIDArray !== null )
         {
             $http->setSessionVariable( 'DeleteOrderIDArray', $orderIDArray );
+            $http->setSessionVariable( 'OrderListOffset', $offset );
             $Module->redirectTo( $Module->functionURI( 'removeorder' ) . '/' );
         }
     }
