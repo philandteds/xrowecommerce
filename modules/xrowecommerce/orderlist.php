@@ -31,8 +31,15 @@ $Module = $Params['Module'];
 
 $tpl = eZTemplate::factory();
 
+if( (int) $Params['Limit'] > 0 ) {
+	eZPreferences::setValue( 'admin_orderlist_limit', (int) $Params['Limit'] );
+}
+
 $offset = $Params['Offset'];
-$limit  = (int) $Params['Limit'] > 0 ? (int) $Params['Limit'] : 15;
+$limit  = (int) eZPreferences::value( 'admin_orderlist_limit' );
+if( $limit <= 0 ) {
+	$limit = 15;
+}
 
 if ( eZPreferences::value( 'admin_orderlist_sortfield' ) )
 {
