@@ -144,3 +144,9 @@ CREATE TABLE `order_confirmation_status` (
   `sent_date` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO order_confirmation_status( order_id, is_sent, sent_date )  
+SELECT o.id, 1, UNIX_TIMESTAMP() 
+FROM ezorder o
+WHERE o.is_temporary = 0
+
