@@ -46,8 +46,11 @@ $regions   = $regionIni->hasVariable( 'Regions', 'LocaleCountryList' )
 	? $regionIni->variable( 'Regions', 'LocaleCountryList' )
 	: array();
 $defaultCountry = $xini->hasVariable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' )
-	? $xini->variable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' )
+	? array($xini->variable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' ))
 	: false;
+if( $defaultCountry && in_array('USA', $defaultCountry ) ) {
+	$defaultCountry[] = 'CAN';
+} 
 $enableRestircted = $xini->hasVariable( 'Settings', 'EnableRestircted' )
 	? in_array( $xini->variable( 'Settings', 'EnableRestircted' ), array( 'enabled', 'yes', 'true' ) )
 	: false;
@@ -505,7 +508,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $inputIsValid = false;
                 $fields['country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No billing country has been selected.' );
             } elseif(
-				( $defaultCountry && $country != $defaultCountry )
+				( $defaultCountry && !in_array($country, $defaultCountry) )
 				|| ( count( $restirctedCountries ) > 0 && in_array( $country, $restirctedCountries ) )
 			) {
 				$inputIsValid = false;
@@ -922,7 +925,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                     $inputIsValid = false;
                     $fields['s_country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No shipping country has been selected.' );
 	            } elseif(
-					( $defaultCountry && $s_country != $defaultCountry )
+					( $defaultCountry && !in_array($s_country, $defaultCountry) )
 					|| ( count( $restirctedCountries ) > 0 && in_array( $s_country, $restirctedCountries ) )
 				) {
 					$inputIsValid = false;
