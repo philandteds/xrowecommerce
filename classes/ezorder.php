@@ -897,7 +897,13 @@ class eZOrder extends eZPersistentObject
 
     function totalIncVAT()
     {
-        return $this->productTotalIncVAT() + $this->orderTotalIncVAT();
+    	$VAT   = 0;
+    	$items = $this->attribute( 'product_items' );
+    	if( count( $items ) > 0 ) {
+    		$VAT = $items[0]['vat_value'];
+    	}
+    	return round( $this->attribute( 'total_ex_vat' ) * ( 100 + $VAT ) / 100 , 2 );
+        //return $this->productTotalIncVAT() + $this->orderTotalIncVAT();
     }
 
     function totalExVAT()

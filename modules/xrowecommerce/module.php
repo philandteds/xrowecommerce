@@ -140,7 +140,7 @@ $ViewList["orderlist"] = array(
     "script" => "orderlist.php",
     'ui_component' => 'shop',
     "default_navigation_part" => 'ezshopnavigationpart',
-    "unordered_params" => array( "offset" => "Offset" ),
+    "unordered_params" => array( "offset" => "Offset", "limit" => "Limit" ),
     "params" => array(  ) );
 
 $ViewList["removeorder"] = array(
@@ -165,6 +165,13 @@ $ViewList["set_payment_gateway"] = array(
     "params" => array( "Gateway" ) );
 
 $ViewList["json"] = array( "script" => "json.php", "params" => array ( 'object', 'method' ) );
+$ViewList["ordersearch"] = array(
+    "functions" => array( 'administrate' ),
+    "script" => "ordersearch.php",
+    'ui_component' => 'shop',
+    "default_navigation_part" => 'ezshopnavigationpart',
+    "unordered_params" => array( "offset" => "Offset", "limit" => "Limit" ),
+    "params" => array( 'Query' ) );
 
 
 $FunctionList['buy'] = array( );

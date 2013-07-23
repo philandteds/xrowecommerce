@@ -3,7 +3,7 @@
 [DataTypeSettings]
 ExtensionDirectories[]=xrowecommerce
 AvailableDataTypes[]=xrowtin
-AvailableDataTypes[]=xrowproductvariation
+#AvailableDataTypes[]=xrowproductvariation
 #AvailableDataTypes[]=ezcoupon
 AvailableDataTypes[]=ezcreditcard
 AvailableDataTypes[]=xrowbillingcycle
