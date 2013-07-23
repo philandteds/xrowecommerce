@@ -71,6 +71,16 @@ class xrowECommerceConfirmOrderHandler
                 $mail->setContentType( 'text/html' );
             }
             $mailResult = eZMailTransport::send( $mail );
+        	if( $xrowINI->variable( 'MailSettings', 'StoreOrderConfirmationStatus' ) == 'enabled' ) {
+        		$status = OrderConfirmationStatus::fetchByOrderID( $order->attribute( 'id' ) );
+        		if( $status === null ) {
+					$status = new OrderConfirmationStatus();
+					$status->setAttribute( 'order_id', $order->attribute( 'id' ) );
+					$status->setAttribute( 'is_sent', true );
+				}
+        		$status->setAttribute( 'sent_date', time() );
+        		$status->store();
+        	}
             if ( $mailResult )
             {
             	eZDebug::writeDebug( 'Order email were sent to ' . $clientEmail, 'xrowECommerceConfirmOrderHandler' );
@@ -99,7 +109,6 @@ class xrowECommerceConfirmOrderHandler
                 $mail->setContentType( 'text/html' );
             }
                     $mailResult = eZMailTransport::send( $mail );
-
                     if ( $mailResult )
                     {
                         eZDebug::writeDebug( 'Order email were sent to ' . $receiver, 'xrowECommerceConfirmOrderHandler' );

@@ -136,3 +136,17 @@ CREATE TABLE  `xrowproduct_template` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET FOREIGN_KEY_CHECKS = 1;
+
+DROP TABLE IF EXISTS `order_confirmation_status`;
+CREATE TABLE `order_confirmation_status` (
+  `order_id` int(11) unsigned NOT NULL,
+  `is_sent` BIT(1) DEFAULT 0,
+  `sent_date` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO order_confirmation_status( order_id, is_sent, sent_date )  
+SELECT o.id, 1, UNIX_TIMESTAMP() 
+FROM ezorder o
+WHERE o.is_temporary = 0
+
