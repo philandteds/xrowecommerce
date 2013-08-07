@@ -12,7 +12,6 @@ if ( $module->isCurrentAction( 'Cancel' ) )
 }
 
 $user = eZUser::currentUser();
-$xini = eZINI::instance( 'xrowecommerce.ini' );
 
 $zipValidationRules = array(
 	'NZL' => array(
@@ -39,49 +38,10 @@ $zipValidationRules = array(
 	)
 );
 
-$restirctedCountries = array();
-$regionIni = eZINI::instance( 'region.ini' );
-$siteIni   = eZINI::instance( 'site.ini' );
-$regions   = $regionIni->hasVariable( 'Regions', 'LocaleCountryList' )
-	? $regionIni->variable( 'Regions', 'LocaleCountryList' )
-	: array();
-$defaultCountry = $xini->hasVariable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' )
-	? $xini->variable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' )
-	: false;
-$enableRestircted = $xini->hasVariable( 'Settings', 'EnableRestircted' )
-	? in_array( $xini->variable( 'Settings', 'EnableRestircted' ), array( 'enabled', 'yes', 'true' ) )
-	: false;
-
-if( $enableRestircted ) {
-	foreach( $siteIni->variable( 'RegionalSettings', 'LanguageSA' ) as $key => $value ) {
-		if(
-			isset( $regions[ $key ] )
-			&& strlen( $regions[ $key ] ) > 0
-		) {
-			$restirctedCountries = array_merge(
-				$restirctedCountries,
-				explode( ';', $regions[ $key ] )
-			);
-		} else {
-			$country = explode( '-', $key );
-			$country = $country[1];
-			// exclude Rest of World
-			if( $country != 'RW' ) {
-				$restirctedCountries[] = $country;
-			}
-		}
-	}
-	$restirctedCountries = array_unique( $restirctedCountries );
-
-	foreach( $restirctedCountries as $key => $alpha2 ) {
-		$country = eZCountryType::fetchCountry( $alpha2, 'Alpha2' );
-		$restirctedCountries[ $key ] = $country['Alpha3'];
-	}
-}
-
 // Initialize variables
 $email = $title = $s_title = $first_name = $last_name = $shippingtype = $shipping = $s_email = $s_last_name = $s_first_name = $s_address1 = $s_address2 = $s_zip = $s_city = $s_state = $s_country = $s_phone = $s_mi = $address1 = $address2 = $zip = $city = $state = $country = $phone = $recaptcha = $mi = null;
 $userobject = $user->attribute( 'contentobject' );
+$xini = eZINI::instance( 'xrowecommerce.ini' );
 if ( $xini->hasVariable( 'ShopAccountHandlerDefaults', 'CountryCode' ) )
 {
     $country = $xini->variable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' );
@@ -192,7 +152,7 @@ if ( $user->isLoggedIn() and in_array( $userobject->attribute( 'class_identifier
         $payment_method = $userMap['payment_method']->content();
     }
     $email = $user->attribute( 'email' );
-
+    
     if ( $shipping != '1' )
     {
         if ( isset( $userMap['s_company_name'] ) )
@@ -306,37 +266,37 @@ if ( count( $orderList ) > 0 and $user->isLoggedIn() )
 */
 
 $fields = array();
-$field_keys = array(
-    'company_name' ,
-    'company_additional' ,
-    'tax_id' ,
-    'title' ,
-    'first_name' ,
-    'mi' ,
-    'last_name' ,
-    'address1' ,
-    'address2' ,
-    'zip' ,
-    'city' ,
-    'state' ,
-    'country' ,
-    'phone' ,
-    'fax' ,
-    'email' ,
-    's_company_name' ,
-    's_company_additional' ,
-    's_title' ,
-    's_first_name' ,
-    's_mi' ,
-    's_last_name' ,
-    's_address1' ,
-    's_address2' ,
-    's_zip' ,
-    's_city' ,
-    's_state' ,
-    's_country' ,
-    's_phone' ,
-    's_fax' ,
+$field_keys = array( 
+    'company_name' , 
+    'company_additional' , 
+    'tax_id' , 
+    'title' , 
+    'first_name' , 
+    'mi' , 
+    'last_name' , 
+    'address1' , 
+    'address2' , 
+    'zip' , 
+    'city' , 
+    'state' , 
+    'country' , 
+    'phone' , 
+    'fax' , 
+    'email' , 
+    's_company_name' , 
+    's_company_additional' , 
+    's_title' , 
+    's_first_name' , 
+    's_mi' , 
+    's_last_name' , 
+    's_address1' , 
+    's_address2' , 
+    's_zip' , 
+    's_city' , 
+    's_state' , 
+    's_country' , 
+    's_phone' , 
+    's_fax' , 
     's_email'
 );
 foreach ( $field_keys as $key )
@@ -374,7 +334,7 @@ if ( $module->isCurrentAction( 'Store' ) )
 {
     $inputIsValid = true;
     $error_fields = array();
-
+    
     if ( $fields['company_name']['enabled'] == true )
     {
         $company_name = trim( $http->postVariable( 'company_name' ) );
@@ -384,7 +344,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['company_name']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing company name is not given.' );
         }
     }
-
+    
     if ( $fields['company_additional']['enabled'] == true )
     {
         $company_additional = trim( $http->postVariable( 'company_additional' ) );
@@ -394,7 +354,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['company_additional']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing company additional is not given.' );
         }
     }
-
+    
     if ( $fields['title']['enabled'] == true )
     {
         $title = trim( $http->postVariable( 'title' ) );
@@ -407,7 +367,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             }
         }
     }
-
+    
     if ( $fields['first_name']['enabled'] == true )
     {
         $first_name = trim( $http->postVariable( 'first_name' ) );
@@ -420,7 +380,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             }
         }
     }
-
+    
     if ( $fields['last_name']['enabled'] == true )
     {
         $last_name = trim( $http->postVariable( 'last_name' ) );
@@ -430,7 +390,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['last_name']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing last name is not given.' );
         }
     }
-
+    
     if ( $fields['mi']['enabled'] == true )
     {
         $mi = trim( $http->postVariable( 'mi' ) );
@@ -440,7 +400,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['mi']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing mi is not given' );
         }
     }
-
+    
     if ( $fields['email']['enabled'] == true )
     {
         $email = trim( $http->postVariable( 'email' ) );
@@ -463,7 +423,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             }
         }
     }
-
+    
     if ( $fields['address1']['enabled'] == true )
     {
         $address1 = trim( $http->postVariable( 'address1' ) );
@@ -476,7 +436,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             }
         }
     }
-
+    
     if ( $fields['address2']['enabled'] == true )
     {
         $address2 = trim( $http->postVariable( 'address2' ) );
@@ -489,7 +449,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             }
         }
     }
-
+    
     if ( $fields['country']['enabled'] == true )
     {
         $country = trim( $http->postVariable( 'country' ) );
@@ -504,19 +464,10 @@ if ( $module->isCurrentAction( 'Store' ) )
             {
                 $inputIsValid = false;
                 $fields['country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No billing country has been selected.' );
-            } elseif(
-				( $defaultCountry && $country != $defaultCountry )
-				|| ( count( $restirctedCountries ) > 0 && in_array( $country, $restirctedCountries ) )
-			) {
-				$inputIsValid = false;
-				$fields['country']['errors'][0] = ezpI18n::tr(
-					'extension/xrowecommerce',
-					'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
-				);
             }
         }
     }
-
+    
     if ( $fields['state']['enabled'] == true and $fields['state']['required'] == true )
     {
         $state = trim( $http->postVariable( 'state' ) );
@@ -526,7 +477,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['state']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No billing state has been selected.' );
         }
     }
-
+    
     if ( $fields['city']['enabled'] == true )
     {
         $city = trim( $http->postVariable( 'city' ) );
@@ -536,7 +487,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['city']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing city is not given.' );
         }
     }
-
+    
     if ( $fields['zip']['enabled'] == true )
     {
         $zip = trim( $http->postVariable( 'zip' ) );
@@ -559,7 +510,7 @@ if ( $module->isCurrentAction( 'Store' ) )
         	}
         }
     }
-
+    
     if ( $fields['tax_id']['enabled'] == true )
     {
         if ( $http->hasPostVariable( 'tax_id' ) and $tax_id_valid != xrowTINType::STATUS_VALIDATED_BY_ADMIN )
@@ -572,34 +523,34 @@ if ( $module->isCurrentAction( 'Store' ) )
             {
                 $Alpha2 = 'EL';
             }
-            $ids = array(
-                "AT" ,
-                "BE" ,
-                "BG" ,
-                "CY" ,
-                "CZ" ,
-                "DE" ,
-                "DK" ,
-                "EE" ,
-                "EL" ,
-                "ES" ,
-                "FI" ,
-                "FR" ,
-                "GB" ,
-                "HU" ,
-                "IE" ,
-                "IT" ,
-                "LT" ,
-                "LU" ,
-                "LV" ,
-                "MT" ,
-                "NL" ,
-                "PL" ,
-                "PT" ,
-                "RO" ,
-                "SE" ,
-                "SI" ,
-                "SK"
+            $ids = array( 
+                "AT" , 
+                "BE" , 
+                "BG" , 
+                "CY" , 
+                "CZ" , 
+                "DE" , 
+                "DK" , 
+                "EE" , 
+                "EL" , 
+                "ES" , 
+                "FI" , 
+                "FR" , 
+                "GB" , 
+                "HU" , 
+                "IE" , 
+                "IT" , 
+                "LT" , 
+                "LU" , 
+                "LV" , 
+                "MT" , 
+                "NL" , 
+                "PL" , 
+                "PT" , 
+                "RO" , 
+                "SE" , 
+                "SI" , 
+                "SK" 
             );
             $tax_id = strtoupper( trim( $http->postVariable( 'tax_id' ) ) );
             if ( $fields['tax_id']['required'] == true )
@@ -650,7 +601,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                     {
                         if ( empty( $tax_id ) )
                         {
-
+                        
                         }
                         elseif ( ! xrowECommerce::validateTIN( $Alpha2, $tax_id, $errors2 ) )
                         {
@@ -669,7 +620,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             }
         }
     }
-
+    
     if ( $fields['phone']['enabled'] == true )
     {
         $phone = trim( $http->postVariable( 'phone' ) );
@@ -679,7 +630,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['phone']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing phone number is not given.' );
         }
     }
-
+    
     if ( $fields['fax']['enabled'] == true )
     {
         $fax = trim( $http->postVariable( 'fax' ) );
@@ -689,24 +640,24 @@ if ( $module->isCurrentAction( 'Store' ) )
             $fields['fax']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The billing fax number is not given.' );
         }
     }
-
+    
     if ( $http->hasPostVariable( 'PaymentMethod' ) )
     {
         $payment_method = $http->postVariable( 'PaymentMethod' );
     }
-
+    
     if ( $http->hasPostVariable( 'reference' ) )
     {
         $reference = $http->postVariable( 'reference' );
     }
-
+    
     if ( $http->hasPostVariable( 'message' ) )
     {
         $message = $http->postVariable( 'message' );
     }
-
+    
     $no_partial_delivery_temp = $xini->variable( 'Fields', 'NoPartialDelivery' );
-
+    
     if ( $http->hasPostVariable( 'no_partial_delivery' ) )
     {
         $no_partial_delivery = '1';
@@ -715,9 +666,9 @@ if ( $module->isCurrentAction( 'Store' ) )
     {
         $no_partial_delivery = '0';
     }
-
+    
     $newsletter_temp = $xini->variable( 'Fields', 'Newsletter' );
-
+    
     if ( $http->hasPostVariable( 'newsletter' ) and $newsletter_temp['enabled'] == 'true' )
     {
         $newsletter = '1';
@@ -726,7 +677,7 @@ if ( $module->isCurrentAction( 'Store' ) )
     {
         $newsletter = '0';
     }
-
+    
     if ( $http->hasPostVariable( 'shipping' ) )
     {
         $shipping = '1';
@@ -759,9 +710,9 @@ if ( $module->isCurrentAction( 'Store' ) )
     {
         $fields['shippingtype']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'Please select a proper shipping method for your destination.' );
     }
-
+    
     $gateway = xrowShippingInterface::instanceByMethod( $shippingtype );
-
+    
     $basket = eZBasket::currentBasket();
     $productcollection = $basket->productCollection();
     $items = $productcollection->itemList();
@@ -771,7 +722,7 @@ if ( $module->isCurrentAction( 'Store' ) )
         $co = eZContentObject::fetch( $item->attribute( 'contentobject_id' ) );
         // Fetch object datamap
         $dm = $co->dataMap();
-
+        
         // Hazardous Item check
         if ( array_key_exists( 'hazardous', $dm ) and $dm["hazardous"]->DataInt == 1 )
         {
@@ -782,9 +733,9 @@ if ( $module->isCurrentAction( 'Store' ) )
             }
         }
     }
-
+    
     $shippingdestination = $country;
-
+    
     if ( $shipping != '1' )
     {
         if ( $fields['s_company_name']['enabled'] == true )
@@ -796,7 +747,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_company_name']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping company name is not given.' );
             }
         }
-
+        
         if ( $fields['s_company_additional']['enabled'] == true )
         {
             $s_company_additional = trim( $http->postVariable( 's_company_additional' ) );
@@ -806,7 +757,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_company_additional']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping company additional field is not given.' );
             }
         }
-
+        
         if ( $fields['s_title']['enabled'] == true )
         {
             $s_title = trim( $http->postVariable( 's_title' ) );
@@ -816,7 +767,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_title']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping title is not given.' );
             }
         }
-
+        
         if ( $fields['s_first_name']['enabled'] == true )
         {
             $s_first_name = trim( $http->postVariable( 's_first_name' ) );
@@ -826,7 +777,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_first_name']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping first name is not given.' );
             }
         }
-
+        
         if ( $fields['s_last_name']['enabled'] == true )
         {
             $s_last_name = trim( $http->postVariable( 's_last_name' ) );
@@ -836,7 +787,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_last_name']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping last name is not given.' );
             }
         }
-
+        
         if ( $fields['s_mi']['enabled'] == true )
         {
             $s_mi = trim( $http->postVariable( 's_mi' ) );
@@ -846,7 +797,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_mi']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping mi is not given.' );
             }
         }
-
+        
         if ( $fields['s_email']['enabled'] == true )
         {
             $s_email = trim( $http->postVariable( 's_email' ) );
@@ -866,7 +817,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 }
             }
         }
-
+        
         if ( $fields['s_address1']['enabled'] == true )
         {
             $s_address1 = trim( $http->postVariable( 's_address1' ) );
@@ -876,7 +827,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_address1']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping address is not given.' );
             }
         }
-
+        
         if ( $fields['s_address2']['enabled'] == true )
         {
             $s_address2 = trim( $http->postVariable( 's_address2' ) );
@@ -886,7 +837,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_address2']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping address 2 is not given.' );
             }
         }
-
+        
         if ( $fields['s_city']['enabled'] == true )
         {
             $s_city = trim( $http->postVariable( 's_city' ) );
@@ -896,7 +847,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_city']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping city is not given.' );
             }
         }
-
+        
         if ( $fields['s_zip']['enabled'] == true )
         {
             $s_zip = trim( $http->postVariable( 's_zip' ) );
@@ -906,7 +857,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_zip']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping zip is not given.' );
             }
         }
-
+        
         if ( $fields['s_country']['enabled'] == true )
         {
             $s_country = trim( $http->postVariable( 's_country' ) );
@@ -921,19 +872,10 @@ if ( $module->isCurrentAction( 'Store' ) )
                 {
                     $inputIsValid = false;
                     $fields['s_country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No shipping country has been selected.' );
-	            } elseif(
-					( $defaultCountry && $s_country != $defaultCountry )
-					|| ( count( $restirctedCountries ) > 0 && in_array( $s_country, $restirctedCountries ) )
-				) {
-					$inputIsValid = false;
-					$fields['country']['errors'][0] = ezpI18n::tr(
-						'extension/xrowecommerce',
-						'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
-					);
-	            }
+                }
             }
         }
-
+        
         if ( $fields['s_state']['enabled'] == true and $fields['s_state']['required'] == true )
         {
             $s_state = trim( $http->postVariable( 's_state' ) );
@@ -943,7 +885,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_state']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No shipping state has been selected.' );
             }
         }
-
+        
         if ( $fields['s_phone']['enabled'] == true and $fields['s_phone']['required'] == true )
         {
             $s_phone = trim( $http->postVariable( 's_phone' ) );
@@ -953,7 +895,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_phone']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping phone number is not given.' );
             }
         }
-
+        
         if ( $fields['s_fax']['enabled'] == true and $fields['s_fax']['required'] == true )
         {
             $s_fax = trim( $http->postVariable( 's_fax' ) );
@@ -963,7 +905,7 @@ if ( $module->isCurrentAction( 'Store' ) )
                 $fields['s_fax']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'The shipping fax number is not given.' );
             }
         }
-
+        
         $shippingdestination = $s_country;
         /*
         if ($s_country !="USA" and $shippingtype <= "5" )
@@ -1038,29 +980,29 @@ if ( $module->isCurrentAction( 'Store' ) )
             $_SESSION['xrowCaptchaSolved'] = 1;
         }
     }
-
+    
     if ( $inputIsValid )
     {
         // Check for validation
         $basket = eZBasket::currentBasket();
-
+        
         $db = eZDB::instance();
         $db->begin();
         $order = $basket->createOrder();
-
+        
         $doc = new DOMDocument( '1.0', 'utf-8' );
         $root = $doc->createElement( 'shop_account' );
         $doc->appendChild( $root );
         $siteaccessNode = $doc->createElement( 'siteaccess', $GLOBALS['eZCurrentAccess']['name'] );
-
+        
         $root->appendChild( $siteaccessNode );
-
+        
         $company_nameNode = $doc->createElement( 'company_name', xrowECommerce::encodeString( $company_name ) );
         $root->appendChild( $company_nameNode );
-
+        
         $company_additionalNode = $doc->createElement( 'company_additional', xrowECommerce::encodeString( $company_additional ) );
         $root->appendChild( $company_additionalNode );
-
+        
         $tax_idNode = $doc->createElement( 'tax_id', xrowECommerce::encodeString( $tax_id ) );
         $root->appendChild( $tax_idNode );
         if ( $tax_id and $tax_id_valid )
@@ -1073,58 +1015,58 @@ if ( $module->isCurrentAction( 'Store' ) )
             $tax_idNode = $doc->createElement( 'tax_id_valid', '0' );
             $root->appendChild( $tax_idNode );
         }
-
+        
         $titleNode = $doc->createElement( 'title', xrowECommerce::encodeString( $title ) );
         $root->appendChild( $titleNode );
-
+        
         $first_nameNode = $doc->createElement( 'first_name', xrowECommerce::encodeString( $first_name ) );
         $root->appendChild( $first_nameNode );
-
+        
         $miNode = $doc->createElement( 'mi', xrowECommerce::encodeString( $mi ) );
         $root->appendChild( $miNode );
-
+        
         $last_nameNode = $doc->createElement( 'last_name' );
         $last_nameNode->appendChild( $doc->createTextNode( xrowECommerce::encodeString( $last_name ) ) );
         $root->appendChild( $last_nameNode );
-
+        
         $address1Node = $doc->createElement( 'address1' );
         $address1Node->appendChild( $doc->createTextNode( xrowECommerce::encodeString( $address1 ) ) );
         $root->appendChild( $address1Node );
-
+        
         $address2Node = $doc->createElement( 'address2' );
         $address2Node->appendChild( $doc->createTextNode( xrowECommerce::encodeString( $address2 ) ) );
         $root->appendChild( $address2Node );
-
+        
         $cityNode = $doc->createElement( 'city', xrowECommerce::encodeString( $city ) );
         $root->appendChild( $cityNode );
-
+        
         $stateNode = $doc->createElement( 'state', xrowECommerce::encodeString( $state ) );
         $root->appendChild( $stateNode );
-
+        
         $zipNode = $doc->createElement( 'zip', $zip );
         $root->appendChild( $zipNode );
-
+        
         $countryNode = $doc->createElement( 'country', xrowECommerce::encodeString( $country ) );
         $root->appendChild( $countryNode );
-
+        
         $phoneNode = $doc->createElement( 'phone', xrowECommerce::encodeString( $phone ) );
         $root->appendChild( $phoneNode );
-
+        
         $faxNode = $doc->createElement( 'fax', xrowECommerce::encodeString( $fax ) );
         $root->appendChild( $faxNode );
-
+        
         $emailNode = $doc->createElement( 'email', xrowECommerce::encodeString( $email ) );
         $root->appendChild( $emailNode );
-
+        
         $newsletter = $doc->createElement( 'newsletter', xrowECommerce::encodeString( $newsletter ) );
         $root->appendChild( $newsletter );
-
+        
         $shippingNode = $doc->createElement( 'shipping', xrowECommerce::encodeString( $shipping ) );
         $root->appendChild( $shippingNode );
-
+        
         $shippingTypeNode = $doc->createElement( 'shippingtype', xrowECommerce::encodeString( $shippingtype ) );
         $root->appendChild( $shippingTypeNode );
-
+        
         $recaptacheNode = $doc->createElement( 'captcha', xrowECommerce::encodeString( $recaptcha ) );
         $root->appendChild( $recaptacheNode );
         if ( ! empty( $payment_method ) )
@@ -1149,10 +1091,10 @@ if ( $module->isCurrentAction( 'Store' ) )
         }
         $referenceNode = $doc->createElement( 'reference', xrowECommerce::encodeString( $reference ) );
         $root->appendChild( $referenceNode );
-
+        
         $messageNode = $doc->createElement( 'message', xrowECommerce::encodeString( $message ) );
         $root->appendChild( $messageNode );
-
+        
         if ( isset( $_SERVER["HTTP_X_FORWARDED_FOR"] ) )
         {
             $remote_address = $_SERVER["HTTP_X_FORWARDED_FOR"];
@@ -1165,119 +1107,119 @@ if ( $module->isCurrentAction( 'Store' ) )
             $client_ip = $doc->createElement( 'client_ip', $remote_address );
             $root->appendChild( $client_ip );
         }
-
+        
         if ( $shipping != '1' )
         {
             /* Shipping address*/
-
+            
             $s_company_nameNode = $doc->createElement( 's_company_name', xrowECommerce::encodeString( $s_company_name ) );
-
+            
             $root->appendChild( $s_company_nameNode );
-
+            
             $s_company_additionalNode = $doc->createElement( 's_company_additional', xrowECommerce::encodeString( $s_company_additional ) );
             $root->appendChild( $s_company_additionalNode );
-
+            
             $s_titleNode = $doc->createElement( 's_title', xrowECommerce::encodeString( $s_title ) );
             $root->appendChild( $s_titleNode );
-
+            
             $s_first_nameNode = $doc->createElement( 's_first_name', xrowECommerce::encodeString( $s_first_name ) );
             $root->appendChild( $s_first_nameNode );
-
+            
             $s_miNode = $doc->createElement( 's_mi', xrowECommerce::encodeString( $s_mi ) );
             $root->appendChild( $s_miNode );
-
+            
             $s_last_nameNode = $doc->createElement( 's_last_name', xrowECommerce::encodeString( $s_last_name ) );
             $root->appendChild( $s_last_nameNode );
-
+            
             $s_address1Node = $doc->createElement( 's_address1', xrowECommerce::encodeString( $s_address1 ) );
             $root->appendChild( $s_address1Node );
-
+            
             $s_address2Node = $doc->createElement( 's_address2', xrowECommerce::encodeString( $s_address2 ) );
             $root->appendChild( $s_address2Node );
-
+            
             $s_cityNode = $doc->createElement( 's_city', xrowECommerce::encodeString( $s_city ) );
             $root->appendChild( $s_cityNode );
-
+            
             $s_stateNode = $doc->createElement( 's_state', xrowECommerce::encodeString( $s_state ) );
             $root->appendChild( $s_stateNode );
-
+            
             $s_zipNode = $doc->createElement( 's_zip', xrowECommerce::encodeString( $s_zip ) );
             $root->appendChild( $s_zipNode );
-
+            
             $s_countryNode = $doc->createElement( 's_country', xrowECommerce::encodeString( $s_country ) );
             $root->appendChild( $s_countryNode );
-
+            
             $s_phoneNode = $doc->createElement( 's_phone', xrowECommerce::encodeString( $s_phone ) );
             $root->appendChild( $s_phoneNode );
-
+            
             $s_faxNode = $doc->createElement( 's_fax', xrowECommerce::encodeString( $s_fax ) );
             $root->appendChild( $s_faxNode );
-
+            
             $s_emailNode = $doc->createElement( 's_email', xrowECommerce::encodeString( $s_email ) );
             $root->appendChild( $s_emailNode );
-
+            
         /* Shipping address*/
         } /* Shippingaddress is equal or not */
         else
         {
             $s_company_nameNode = $doc->createElement( 's_company_name', xrowECommerce::encodeString( $company_name ) );
             $root->appendChild( $s_company_nameNode );
-
+            
             $s_company_additionalNode = $doc->createElement( 's_company_additional', xrowECommerce::encodeString( $company_additional ) );
             $root->appendChild( $s_company_additionalNode );
-
+            
             $s_titleNode = $doc->createElement( 's_title', xrowECommerce::encodeString( $title ) );
             $root->appendChild( $s_titleNode );
-
+            
             $s_first_nameNode = $doc->createElement( 's_first_name', xrowECommerce::encodeString( $first_name ) );
             $root->appendChild( $s_first_nameNode );
-
+            
             $s_miNode = $doc->createElement( 's_mi', $mi );
             $root->appendChild( $s_miNode );
-
+            
             $s_last_nameNode = $doc->createElement( 's_last_name', xrowECommerce::encodeString( $last_name ) );
             $root->appendChild( $s_last_nameNode );
-
+            
             $s_address1Node = $doc->createElement( 's_address1', xrowECommerce::encodeString( $address1 ) );
             $root->appendChild( $s_address1Node );
-
+            
             $s_address2Node = $doc->createElement( 's_address2', xrowECommerce::encodeString( $address2 ) );
             $root->appendChild( $s_address2Node );
-
+            
             $s_cityNode = $doc->createElement( 's_city', xrowECommerce::encodeString( $city ) );
             $root->appendChild( $s_cityNode );
-
+            
             $s_stateNode = $doc->createElement( 's_state', xrowECommerce::encodeString( $state ) );
             $root->appendChild( $s_stateNode );
-
+            
             $s_zipNode = $doc->createElement( 's_zip', xrowECommerce::encodeString( $zip ) );
             $root->appendChild( $s_zipNode );
-
+            
             $s_countryNode = $doc->createElement( 's_country', xrowECommerce::encodeString( $country ) );
             $root->appendChild( $s_countryNode );
-
+            
             $s_phoneNode = $doc->createElement( 's_phone', xrowECommerce::encodeString( $phone ) );
             $root->appendChild( $s_phoneNode );
-
+            
             $s_faxNode = $doc->createElement( 's_fax', xrowECommerce::encodeString( $fax ) );
             $root->appendChild( $s_faxNode );
-
+            
             $s_emailNode = $doc->createElement( 's_email', xrowECommerce::encodeString( $email ) );
             $root->appendChild( $s_emailNode );
         }
-
+        
         $order->setAttribute( 'data_text_1', $doc->saveXML() );
         $shopAccountINI = eZINI::instance( 'shopaccount.ini' );
-
+        
         $order->setAttribute( 'account_identifier', $shopAccountINI->variable( 'AccountSettings', 'Handler' ) );
-
+        
         $order->setAttribute( 'ignore_vat', 0 );
-
+        
         $order->store();
         $db->commit();
-
+        
         $http->setSessionVariable( 'MyTemporaryOrderID', $order->attribute( 'id' ) );
-
+        
         $module->redirectTo( '/xrowecommerce/confirmorder/' );
         return;
     }
@@ -1398,10 +1340,10 @@ $tpl->setVariable( 's_states', xrowGeonames::getSubdivisions( $s_country ) );
 
 $Result = array();
 $Result['content'] = $tpl->fetch( 'design:shop/userregister.tpl' );
-$Result['path'] = array(
-    array(
-        'url' => false ,
-        'text' => ezpI18n::tr( 'extension/xrowecommerce', 'Enter account information' )
-    )
+$Result['path'] = array( 
+    array( 
+        'url' => false , 
+        'text' => ezpI18n::tr( 'extension/xrowecommerce', 'Enter account information' ) 
+    ) 
 );
 ?>
