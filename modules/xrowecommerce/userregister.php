@@ -508,11 +508,14 @@ if ( $module->isCurrentAction( 'Store' ) )
 				( $defaultCountry && $country != $defaultCountry )
 				|| ( count( $restirctedCountries ) > 0 && in_array( $country, $restirctedCountries ) )
 			) {
-				$inputIsValid = false;
-				$fields['country']['errors'][0] = ezpI18n::tr(
-					'extension/xrowecommerce',
-					'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
-				);
+				// We need to validate billing country only when shipping country is the same
+				if( $http->hasPostVariable( 'shipping' ) ) {
+					$inputIsValid = false;
+					$fields['country']['errors'][0] = ezpI18n::tr(
+						'extension/xrowecommerce',
+						'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
+					);
+				}
             }
         }
     }
@@ -973,6 +976,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $inputIsValid = false;
 */
     }
+
     /* Shipping check */
     if ( class_exists( 'xrowShippingInterface' ) )
     {
