@@ -738,7 +738,7 @@ if ( $module->isCurrentAction( 'Store' ) )
 
     if ( $http->hasPostVariable( 'message' ) )
     {
-        $message = $http->postVariable( 'message' );
+        $message = strip_tags( $http->postVariable( 'message' ) );
     }
 
     $no_partial_delivery_temp = $xini->variable( 'Fields', 'NoPartialDelivery' );
