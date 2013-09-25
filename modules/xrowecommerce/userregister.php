@@ -50,7 +50,7 @@ $defaultCountry = $xini->hasVariable( 'ShopAccountHandlerDefaults', 'DefaultCoun
 	: false;
 if( $defaultCountry && in_array('USA', $defaultCountry ) ) {
 	$defaultCountry[] = 'CAN';
-} 
+}
 $enableRestircted = $xini->hasVariable( 'Settings', 'EnableRestircted' )
 	? in_array( $xini->variable( 'Settings', 'EnableRestircted' ), array( 'enabled', 'yes', 'true' ) )
 	: false;
@@ -87,6 +87,14 @@ if( $enableRestircted ) {
 			$restirctedCountries[ $key ] = $country['Alpha3'];
 		}
 	}
+}
+
+if( is_array( $defaultCountry ) && count( $defaultCountry ) > 0 ) {
+	foreach( array_keys( $allowedStates ) as $countryCode ) {
+		$country = eZCountryType::fetchCountry( $countryCode, 'Alpha2' );
+		$defaultCountry[] = $country['Alpha3'];
+	}
+	$defaultCountry = array_unique( $defaultCountry );
 }
 
 // Initialize variables
