@@ -55,8 +55,9 @@ $enableRestircted = $xini->hasVariable( 'Settings', 'EnableRestircted' )
 	? in_array( $xini->variable( 'Settings', 'EnableRestircted' ), array( 'enabled', 'yes', 'true' ) )
 	: false;
 
-$excludeStates = $xini->variable( 'ShippingSettings', 'ExcludeStates' );
-$allowedStates = $xini->variable( 'ShippingSettings', 'AllowedStates' );
+$excludeStates       = $xini->variable( 'ShippingSettings', 'ExcludeStates' );
+$allowedStates       = $xini->variable( 'ShippingSettings', 'AllowedStates' );
+$additionalCountries = $xini->variable( 'ShippingSettings', 'AdditionalCountries' );
 
 if( $enableRestircted ) {
 	foreach( $siteIni->variable( 'RegionalSettings', 'LanguageSA' ) as $key => $value ) {
@@ -81,7 +82,10 @@ if( $enableRestircted ) {
 
 	foreach( $restirctedCountries as $key => $alpha2 ) {
 		$country = eZCountryType::fetchCountry( $alpha2, 'Alpha2' );
-		if( isset( $allowedStates[ $alpha2 ] ) ) {
+		if(
+			isset( $allowedStates[ $alpha2 ] )
+			|| in_array( $country['Alpha3'], $additionalCountries )
+		) {
 			unset( $restirctedCountries[ $key ] );
 		} else {
 			$restirctedCountries[ $key ] = $country['Alpha3'];
@@ -94,6 +98,7 @@ if( is_array( $defaultCountry ) && count( $defaultCountry ) > 0 ) {
 		$country = eZCountryType::fetchCountry( $countryCode, 'Alpha2' );
 		$defaultCountry[] = $country['Alpha3'];
 	}
+	$defaultCountry = array_merge( $defaultCountry, $additionalCountries );
 	$defaultCountry = array_unique( $defaultCountry );
 }
 
