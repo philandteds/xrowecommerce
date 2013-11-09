@@ -59,6 +59,9 @@ $excludeStates       = $xini->variable( 'ShippingSettings', 'ExcludeStates' );
 $allowedStates       = $xini->variable( 'ShippingSettings', 'AllowedStates' );
 $additionalCountries = $xini->variable( 'ShippingSettings', 'AdditionalCountries' );
 
+$shippingRestrictedProducts = $xini->variable( 'ShippingSettings', 'RestrictedProducts' );
+$restrictedProductMessage   = $xini->variable( 'ShippingSettings', 'RestrictedProductMessage' );
+
 if( $enableRestircted ) {
 	foreach( $siteIni->variable( 'RegionalSettings', 'LanguageSA' ) as $key => $value ) {
 		if(
@@ -1114,6 +1117,70 @@ if ( $module->isCurrentAction( 'Store' ) )
             $_SESSION['xrowCaptchaSolved'] = 1;
         }
     }
+
+	//$shippingdestination
+	$restrictedProducts = array();
+	if( isset( $shippingRestrictedProducts[ $shippingdestination ] ) ) {
+		 $restrictedProductNumbers = explode( ',', $shippingRestrictedProducts[ $shippingdestination ] );
+		 foreach( $restrictedProductNumbers as $productNumber ) {
+			 $tmp = explode( '-', $productNumber );
+			 if( count( $tmp ) != 2 ) {
+				 continue;
+			 }
+			 $restrictedProducts[] = trim( $productNumber );
+		 }
+	}
+
+	if( count( $restrictedProducts ) > 0 ) {
+		$shippingCountry         = eZCountryType::fetchCountry( $shippingdestination, 'Alpha3' );
+		$restrictedProductErrors = array();
+		$basketPrproducts        = eZBasket::currentBasket()->attribute( 'items' );
+		foreach( $basketPrproducts as $basketPrproduct ) {
+			if(
+				isset( $basketPrproduct['item_object'] ) === false
+				|| $basketPrproduct['item_object'] instanceof eZProductCollectionItem === false
+			) {
+				continue;
+			}
+
+			$pObject = $basketPrproduct['item_object']->attribute( 'contentobject' );
+			if( $pObject instanceof eZContentObject === false ) {
+				continue;
+			}
+
+			$pDataMap = $pObject->attribute( 'data_map' );
+			if(
+				isset( $pDataMap['product_id'] ) === false
+				|| isset( $pDataMap['version'] ) === false
+			) {
+				continue;
+			}
+
+			$productNumber = $pDataMap['product_id']->attribute( 'content' )
+				. '-' . $pDataMap['version']->attribute( 'content' );
+			if( in_array( $productNumber, $restrictedProducts ) ) {
+				$url    = $pObject->attribute( 'main_node' )->attribute( 'url_alias' );
+				eZURI::transformURI( $url );
+				$restrictedProductErrors[] = ezpI18n::tr(
+					'extension/xrowecommerce',
+					$restrictedProductMessage,
+					null,
+					array(
+						'%product_name'     => $pObject->attribute( 'name' ),
+						'%product_url'      => $url,
+						'%shipping_country' => $shippingCountry['Name']
+					)
+				);
+			}
+		}
+
+		if( count( $restrictedProductErrors ) > 0 ) {
+			$countryField = $shipping != '1' ? 's_country' : 'country';
+
+			$fields[ $countryField ]['errors'] = $restrictedProductErrors;
+			$inputIsValid = false;
+		}
+	}
 
     if ( $inputIsValid )
     {
