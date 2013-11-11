@@ -20,7 +20,7 @@ class xrowGeonames
 
     function __construct()
     {
-        
+
         if ( ! is_dir( 'var/cache/geonames.org/country' ) )
         {
             mkdir( 'var/cache/geonames.org/country', 0777, true );
@@ -29,7 +29,7 @@ class xrowGeonames
         $cache = ezcCacheManager::getCache( 'countries' );
         if ( ( $this->country_map = $cache->restore( 'countries' ) ) === false )
         {
-            
+
             /*
 array(19) {
     [0]=>
@@ -131,7 +131,7 @@ array(19) {
                         $this->map[$this->country_map[$matches[1][0]]['Alpha3']][$matches[2][0]] = $matches[3][0];
                     }
                 }
-            
+
             }
             foreach ( $this->map as $key => $value )
             {
@@ -165,7 +165,8 @@ array(19) {
 
     static function getSubdivisionName( $country, $id )
     {
-        return self::instance()->map[$country][$id];
+		$map = self::instance()->map;
+        return isset( $map[$country][$id] ) ? $map[$country][$id] : null;
     }
 
     static function getCountry( $country )

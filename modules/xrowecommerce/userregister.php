@@ -38,6 +38,69 @@ $zipValidationRules = array(
 	)
 );
 
+$restirctedCountries = array();
+$regionIni = eZINI::instance( 'region.ini' );
+$siteIni   = eZINI::instance( 'site.ini' );
+$regions   = $regionIni->hasVariable( 'Regions', 'LocaleCountryList' )
+	? $regionIni->variable( 'Regions', 'LocaleCountryList' )
+	: array();
+$defaultCountry = $xini->hasVariable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' )
+	? array($xini->variable( 'ShopAccountHandlerDefaults', 'DefaultCountryCode' ))
+	: false;
+if( $defaultCountry && in_array('USA', $defaultCountry ) ) {
+	$defaultCountry[] = 'CAN';
+}
+$enableRestircted = $xini->hasVariable( 'Settings', 'EnableRestircted' )
+	? in_array( $xini->variable( 'Settings', 'EnableRestircted' ), array( 'enabled', 'yes', 'true' ) )
+	: false;
+
+$excludeStates       = $xini->variable( 'ShippingSettings', 'ExcludeStates' );
+$allowedStates       = $xini->variable( 'ShippingSettings', 'AllowedStates' );
+$additionalCountries = $xini->variable( 'ShippingSettings', 'AdditionalCountries' );
+
+if( $enableRestircted ) {
+	foreach( $siteIni->variable( 'RegionalSettings', 'LanguageSA' ) as $key => $value ) {
+		if(
+			isset( $regions[ $key ] )
+			&& strlen( $regions[ $key ] ) > 0
+		) {
+			$restirctedCountries = array_merge(
+				$restirctedCountries,
+				explode( ';', $regions[ $key ] )
+			);
+		} else {
+			$country = explode( '-', $key );
+			$country = $country[1];
+			// exclude Rest of World
+			if( $country != 'RW' ) {
+				$restirctedCountries[] = $country;
+			}
+		}
+	}
+	$restirctedCountries = array_unique( $restirctedCountries );
+
+	foreach( $restirctedCountries as $key => $alpha2 ) {
+		$country = eZCountryType::fetchCountry( $alpha2, 'Alpha2' );
+		if(
+			isset( $allowedStates[ $alpha2 ] )
+			|| in_array( $country['Alpha3'], $additionalCountries )
+		) {
+			unset( $restirctedCountries[ $key ] );
+		} else {
+			$restirctedCountries[ $key ] = $country['Alpha3'];
+		}
+	}
+}
+
+if( is_array( $defaultCountry ) && count( $defaultCountry ) > 0 ) {
+	foreach( array_keys( $allowedStates ) as $countryCode ) {
+		$country = eZCountryType::fetchCountry( $countryCode, 'Alpha2' );
+		$defaultCountry[] = $country['Alpha3'];
+	}
+	$defaultCountry = array_merge( $defaultCountry, $additionalCountries );
+	$defaultCountry = array_unique( $defaultCountry );
+}
+
 // Initialize variables
 $email = $title = $s_title = $first_name = $last_name = $shippingtype = $shipping = $s_email = $s_last_name = $s_first_name = $s_address1 = $s_address2 = $s_zip = $s_city = $s_state = $s_country = $s_phone = $s_mi = $address1 = $address2 = $zip = $city = $state = $country = $phone = $recaptcha = $mi = null;
 $userobject = $user->attribute( 'contentobject' );
@@ -464,6 +527,21 @@ if ( $module->isCurrentAction( 'Store' ) )
             {
                 $inputIsValid = false;
                 $fields['country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No billing country has been selected.' );
+<<<<<<< HEAD
+=======
+            } elseif(
+				( $defaultCountry && !in_array($country, $defaultCountry) )
+				|| ( count( $restirctedCountries ) > 0 && in_array( $country, $restirctedCountries ) )
+			) {
+				// We need to validate billing country only when shipping country is the same
+				if( $http->hasPostVariable( 'shipping' ) ) {
+					$inputIsValid = false;
+					$fields['country']['errors'][0] = ezpI18n::tr(
+						'extension/xrowecommerce',
+						'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
+					);
+				}
+>>>>>>> 29a9fd9b6e371a0d1d4246b8f9b89b88b9f1cba3
             }
         }
     }
@@ -475,6 +553,32 @@ if ( $module->isCurrentAction( 'Store' ) )
         {
             $inputIsValid = false;
             $fields['state']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No billing state has been selected.' );
+        } else {
+			// We need to validate billing country only when shipping country is the same
+			if( $http->hasPostVariable( 'shipping' ) ) {
+	        	if( isset( $excludeStates[ $country ] ) ) {
+	        		$excludeStateCodes = explode( ',', $excludeStates[ $country ] );
+	        		if( in_array( $state, $excludeStateCodes ) ) {
+	        			$inputIsValid = false;
+						$fields['state']['errors'][0] = ezpI18n::tr(
+							'extension/xrowecommerce',
+							'Sorry, it\'s not possible to ship to the state you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
+						);
+	        		}
+	        	}
+
+				$countryInfo = eZCountryType::fetchCountry( $country, 'Alpha3' );
+	        	if( isset( $allowedStates[ $countryInfo['Alpha2'] ] ) ) {
+	        		$allowedStatesCodes = explode( ',', $allowedStates[ $countryInfo['Alpha2'] ] );
+	        		if( in_array( $state, $allowedStatesCodes ) === false ) {
+	        			$inputIsValid = false;
+						$fields['state']['errors'][0] = ezpI18n::tr(
+							'extension/xrowecommerce',
+							'Sorry, it\'s not possible to ship to the state you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
+						);
+	        		}
+	        	}
+        	}
         }
     }
     
@@ -653,7 +757,7 @@ if ( $module->isCurrentAction( 'Store' ) )
     
     if ( $http->hasPostVariable( 'message' ) )
     {
-        $message = $http->postVariable( 'message' );
+        $message = strip_tags( $http->postVariable( 'message' ) );
     }
     
     $no_partial_delivery_temp = $xini->variable( 'Fields', 'NoPartialDelivery' );
@@ -872,7 +976,20 @@ if ( $module->isCurrentAction( 'Store' ) )
                 {
                     $inputIsValid = false;
                     $fields['s_country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No shipping country has been selected.' );
+<<<<<<< HEAD
                 }
+=======
+	            } elseif(
+					( $defaultCountry && !in_array($s_country, $defaultCountry) )
+					|| ( count( $restirctedCountries ) > 0 && in_array( $s_country, $restirctedCountries ) )
+				) {
+					$inputIsValid = false;
+					$fields['country']['errors'][0] = ezpI18n::tr(
+						'extension/xrowecommerce',
+						'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
+					);
+	            }
+>>>>>>> 29a9fd9b6e371a0d1d4246b8f9b89b88b9f1cba3
             }
         }
         
@@ -883,7 +1000,30 @@ if ( $module->isCurrentAction( 'Store' ) )
             {
                 $inputIsValid = false;
                 $fields['s_state']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No shipping state has been selected.' );
-            }
+            } else {
+	        	if( isset( $excludeStates[ $s_country ] ) ) {
+	        		$excludeStateCodes = explode( ',', $excludeStates[ $s_country ] );
+	        		if( in_array( $s_state, $excludeStateCodes ) ) {
+	        			$inputIsValid = false;
+						$fields['s_state']['errors'][0] = ezpI18n::tr(
+							'extension/xrowecommerce',
+							'Sorry, it\'s not possible to ship to the state you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
+						);
+	        		}
+	        	}
+
+				$countryInfo = eZCountryType::fetchCountry( $s_country, 'Alpha3' );
+	        	if( isset( $allowedStates[ $countryInfo['Alpha2'] ] ) ) {
+	        		$allowedStatesCodes = explode( ',', $allowedStates[ $countryInfo['Alpha2'] ] );
+	        		if( in_array( $s_state, $allowedStatesCodes ) === false ) {
+	        			$inputIsValid = false;
+						$fields['s_state']['errors'][0] = ezpI18n::tr(
+							'extension/xrowecommerce',
+							'Sorry, it\'s not possible to ship to the state you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
+						);
+	        		}
+	        	}
+	        }
         }
         
         if ( $fields['s_phone']['enabled'] == true and $fields['s_phone']['required'] == true )
@@ -915,6 +1055,7 @@ if ( $module->isCurrentAction( 'Store' ) )
             $inputIsValid = false;
 */
     }
+
     /* Shipping check */
     if ( class_exists( 'xrowShippingInterface' ) )
     {
