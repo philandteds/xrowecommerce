@@ -58,6 +58,9 @@ $excludeStates       = $xini->variable( 'ShippingSettings', 'ExcludeStates' );
 $allowedStates       = $xini->variable( 'ShippingSettings', 'AllowedStates' );
 $additionalCountries = $xini->variable( 'ShippingSettings', 'AdditionalCountries' );
 
+$shippingRestrictedProducts = $xini->variable( 'ShippingSettings', 'RestrictedProducts' );
+$restrictedProductMessage   = $xini->variable( 'ShippingSettings', 'RestrictedProductMessage' );
+
 if( $enableRestircted ) {
 	foreach( $siteIni->variable( 'RegionalSettings', 'LanguageSA' ) as $key => $value ) {
 		if(
@@ -527,8 +530,6 @@ if ( $module->isCurrentAction( 'Store' ) )
             {
                 $inputIsValid = false;
                 $fields['country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No billing country has been selected.' );
-<<<<<<< HEAD
-=======
             } elseif(
 				( $defaultCountry && !in_array($country, $defaultCountry) )
 				|| ( count( $restirctedCountries ) > 0 && in_array( $country, $restirctedCountries ) )
@@ -541,7 +542,6 @@ if ( $module->isCurrentAction( 'Store' ) )
 						'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
 					);
 				}
->>>>>>> 29a9fd9b6e371a0d1d4246b8f9b89b88b9f1cba3
             }
         }
     }
@@ -976,9 +976,6 @@ if ( $module->isCurrentAction( 'Store' ) )
                 {
                     $inputIsValid = false;
                     $fields['s_country']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No shipping country has been selected.' );
-<<<<<<< HEAD
-                }
-=======
 	            } elseif(
 					( $defaultCountry && !in_array($s_country, $defaultCountry) )
 					|| ( count( $restirctedCountries ) > 0 && in_array( $s_country, $restirctedCountries ) )
@@ -989,7 +986,6 @@ if ( $module->isCurrentAction( 'Store' ) )
 						'Sorry, it\'s not possible to ship to the country you\'ve selected from this site. Other regions may be selected from the menu at the top of the page.'
 					);
 	            }
->>>>>>> 29a9fd9b6e371a0d1d4246b8f9b89b88b9f1cba3
             }
         }
         
@@ -1121,7 +1117,71 @@ if ( $module->isCurrentAction( 'Store' ) )
             $_SESSION['xrowCaptchaSolved'] = 1;
         }
     }
-    
+
+	//$shippingdestination
+	$restrictedProducts = array();
+	if( isset( $shippingRestrictedProducts[ $shippingdestination ] ) ) {
+		 $restrictedProductNumbers = explode( ',', $shippingRestrictedProducts[ $shippingdestination ] );
+		 foreach( $restrictedProductNumbers as $productNumber ) {
+			 $tmp = explode( '-', $productNumber );
+			 if( count( $tmp ) != 2 ) {
+				 continue;
+			 }
+			 $restrictedProducts[] = trim( $productNumber );
+		 }
+	}
+
+	if( count( $restrictedProducts ) > 0 ) {
+		$shippingCountry         = eZCountryType::fetchCountry( $shippingdestination, 'Alpha3' );
+		$restrictedProductErrors = array();
+		$basketPrproducts        = eZBasket::currentBasket()->attribute( 'items' );
+		foreach( $basketPrproducts as $basketPrproduct ) {
+			if(
+				isset( $basketPrproduct['item_object'] ) === false
+				|| $basketPrproduct['item_object'] instanceof eZProductCollectionItem === false
+			) {
+				continue;
+			}
+
+			$pObject = $basketPrproduct['item_object']->attribute( 'contentobject' );
+			if( $pObject instanceof eZContentObject === false ) {
+				continue;
+			}
+
+			$pDataMap = $pObject->attribute( 'data_map' );
+			if(
+				isset( $pDataMap['product_id'] ) === false
+				|| isset( $pDataMap['version'] ) === false
+			) {
+				continue;
+			}
+
+			$productNumber = $pDataMap['product_id']->attribute( 'content' )
+				. '-' . $pDataMap['version']->attribute( 'content' );
+			if( in_array( $productNumber, $restrictedProducts ) ) {
+				$url    = $pObject->attribute( 'main_node' )->attribute( 'url_alias' );
+				eZURI::transformURI( $url );
+				$restrictedProductErrors[] = ezpI18n::tr(
+					'extension/xrowecommerce',
+					$restrictedProductMessage,
+					null,
+					array(
+						'%product_name'     => $pObject->attribute( 'name' ),
+						'%product_url'      => $url,
+						'%shipping_country' => $shippingCountry['Name']
+					)
+				);
+			}
+		}
+
+		if( count( $restrictedProductErrors ) > 0 ) {
+			$countryField = $shipping != '1' ? 's_country' : 'country';
+
+			$fields[ $countryField ]['errors'] = $restrictedProductErrors;
+			$inputIsValid = false;
+		}
+	}
+
     if ( $inputIsValid )
     {
         // Check for validation
