@@ -12,6 +12,7 @@ if ( $module->isCurrentAction( 'Cancel' ) )
 }
 
 $user = eZUser::currentUser();
+$xini   = eZINI::instance( 'xrowecommerce.ini' );
 
 $zipValidationRules = array(
 	'NZL' => array(
@@ -41,6 +42,7 @@ $zipValidationRules = array(
 $restirctedCountries = array();
 $regionIni = eZINI::instance( 'region.ini' );
 $siteIni   = eZINI::instance( 'site.ini' );
+
 $regions   = $regionIni->hasVariable( 'Regions', 'LocaleCountryList' )
 	? $regionIni->variable( 'Regions', 'LocaleCountryList' )
 	: array();
