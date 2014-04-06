@@ -72,14 +72,14 @@ class xrowECommerceConfirmOrderHandler
             }
             $mailResult = eZMailTransport::send( $mail );
         	if( $xrowINI->variable( 'MailSettings', 'StoreOrderConfirmationStatus' ) == 'enabled' ) {
-        		$status = OrderConfirmationStatus::fetchByOrderID( $order->attribute( 'id' ) );
-        		if( $status === null ) {
-					$status = new OrderConfirmationStatus();
-					$status->setAttribute( 'order_id', $order->attribute( 'id' ) );
-					$status->setAttribute( 'is_sent', true );
-				}
-        		$status->setAttribute( 'sent_date', time() );
-        		$status->store();
+                $status = OrderConfirmationStatus::fetchByOrderID( $order->attribute( 'id' ) );
+                if( $status === null ) {
+                    $status = new OrderConfirmationStatus();
+                    $status->setAttribute( 'order_id', $order->attribute( 'id' ) );
+                }
+                $status->setAttribute( 'is_sent', (int) $mailResult );
+                $status->setAttribute( 'sent_date', time() );
+                $status->store();
         	}
             if ( $mailResult )
             {
