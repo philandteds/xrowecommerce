@@ -747,6 +747,18 @@ if ( $module->isCurrentAction( 'Store' ) )
         }
     }
 
+    $maxCommentSize = 255;
+    if ( $http->hasPostVariable( 'message' ) && strlen( strip_tags( $http->postVariable( 'message' ) ) ) > $maxCommentSize )
+    {
+        $inputIsValid = false;
+        $fields['message']['errors'][0] = ezpI18n::tr(
+            'extension/xrowecommerce',
+            'Comment is too long (it should not be longer than %max_size characters)',
+            null,
+            array( '%max_size' => $maxCommentSize )
+        );
+    }
+
     if ( $http->hasPostVariable( 'PaymentMethod' ) )
     {
         $payment_method = $http->postVariable( 'PaymentMethod' );
