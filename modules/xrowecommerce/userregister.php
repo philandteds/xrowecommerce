@@ -59,6 +59,7 @@ $enableRestircted = $xini->hasVariable( 'Settings', 'EnableRestircted' )
 $excludeStates       = $xini->variable( 'ShippingSettings', 'ExcludeStates' );
 $allowedStates       = $xini->variable( 'ShippingSettings', 'AllowedStates' );
 $additionalCountries = $xini->variable( 'ShippingSettings', 'AdditionalCountries' );
+$excludeCountries    = $xini->variable( 'ShippingSettings', 'ExcludeCountries' );
 
 $shippingRestrictedProducts = $xini->variable( 'ShippingSettings', 'RestrictedProducts' );
 $restrictedProductMessage   = $xini->variable( 'ShippingSettings', 'RestrictedProductMessage' );
@@ -82,7 +83,16 @@ if( $enableRestircted ) {
 			}
 		}
 	}
+	eZDebug::writeDebug($excludeCountries, 'excluded countries');
+	foreach( $excludeCountries as $exc ) {
+		$country = eZCountryType::fetchCountry( $exc, 'Alpha3' );
+		if( in_array( $country['Alpha2'], $restirctedCountries ) ){
+			$restirctedCountries[] = $country['Alpha2'];
+		}
+	}
+
 	$restirctedCountries = array_unique( $restirctedCountries );
+	eZDebug::writeDebug($restirctedCountries, 'Restricted Countries');
 
 	foreach( $restirctedCountries as $key => $alpha2 ) {
 		$country = eZCountryType::fetchCountry( $alpha2, 'Alpha2' );
