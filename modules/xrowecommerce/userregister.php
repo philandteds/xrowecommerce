@@ -86,7 +86,7 @@ if( $enableRestircted ) {
 	eZDebug::writeDebug($excludeCountries, 'excluded countries');
 	foreach( $excludeCountries as $exc ) {
 		$country = eZCountryType::fetchCountry( $exc, 'Alpha3' );
-		if( in_array( $country['Alpha2'], $restirctedCountries ) ){
+		if( isset( $country['Alpha2'] ) ){
 			$restirctedCountries[] = $country['Alpha2'];
 		}
 	}
@@ -538,6 +538,8 @@ if ( $module->isCurrentAction( 'Store' ) )
         }
         else
         {
+	eZDebug::writeDebug($country, 'country');
+	eZDebug::writeDebug($restirctedCountries, 'final restricted countries');
             if ( $xini->hasVariable( 'Settings', 'CountryWihtStatesList' ) and in_array( $country, $xini->variable( 'Settings', 'CountryWihtStatesList' ) ) and $state == '' )
             {
                 $inputIsValid = false;
