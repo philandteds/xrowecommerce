@@ -12,7 +12,7 @@ if ( $module->isCurrentAction( 'Cancel' ) )
 }
 
 $user = eZUser::currentUser();
-$xini   = eZINI::instance( 'xrowecommerce.ini' );
+$xini = eZINI::instance( 'xrowecommerce.ini' );
 
 $zipValidationRules = array(
 	'NZL' => array(
@@ -1205,6 +1205,48 @@ if ( $module->isCurrentAction( 'Store' ) )
 
 			$fields[ $countryField ]['errors'] = $restrictedProductErrors;
 			$inputIsValid = false;
+		}
+	}
+
+	if( $inputIsValid ) {
+		$isAddrssValidationEnabled = $xini->variable( 'AddressValidation', 'Enabled' );
+		$isAddrssValidationEnabled = in_array( $isAddrssValidationEnabled, array( 'yes', 'true', 'enabled' ) );
+
+		if( $isAddrssValidationEnabled ) {
+			$addressIsValid = true;
+			$stopWords      = (array) $xini->variable( 'AddressValidation', 'StopWords' );
+
+			$addrFiels = array(
+				$city,
+				$address1,
+				$address2
+			);
+			if( $shipping != '1' ) {
+				$addrFiels = array(
+					$s_city,
+					$s_address1,
+					$s_address2
+				);
+			}
+
+			foreach( $stopWords as $stopWord ) {
+				foreach( $addrFiels as $addrField ) {
+					if( strpos( $addrField, $stopWord ) !== false ) {
+						$addressIsValid = false;
+						break;
+					}
+				}
+			}
+
+			if( $addressIsValid === false ) {
+				$inputIsValid = false;
+
+				$addrField = $shipping != '1' ? 's_address1' : 'address1';
+				$validationErrorMessage = $xini->variable( 'AddressValidation', 'ValidationError' );
+				$fields[ $addrField ]['errors'] = array(
+					ezpI18n::tr( 'extension/xrowecommerce', $validationErrorMessage )
+				);
+			}
 		}
 	}
 
