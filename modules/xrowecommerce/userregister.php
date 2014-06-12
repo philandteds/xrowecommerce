@@ -981,45 +981,43 @@ if( $module->isCurrentAction( 'Store' ) ) {
         }
     }
 
-    if( $inputIsValid ) {
-        $isAddrssValidationEnabled = $xini->variable( 'AddressValidation', 'Enabled' );
-        $isAddrssValidationEnabled = in_array( $isAddrssValidationEnabled, array( 'yes', 'true', 'enabled' ) );
+    $isAddrssValidationEnabled = $xini->variable( 'AddressValidation', 'Enabled' );
+    $isAddrssValidationEnabled = in_array( $isAddrssValidationEnabled, array( 'yes', 'true', 'enabled' ) );
 
-        if( $isAddrssValidationEnabled ) {
-            $addressIsValid = true;
-            $stopWords      = (array) $xini->variable( 'AddressValidation', 'StopWords' );
+    if( $isAddrssValidationEnabled ) {
+        $addressIsValid = true;
+        $stopWords      = (array) $xini->variable( 'AddressValidation', 'StopWords' );
 
+        $addrFiels = array(
+            $city,
+            $address1,
+            $address2
+        );
+        if( $shipping != '1' ) {
             $addrFiels = array(
-                $city,
-                $address1,
-                $address2
+                $s_city,
+                $s_address1,
+                $s_address2
             );
-            if( $shipping != '1' ) {
-                $addrFiels = array(
-                    $s_city,
-                    $s_address1,
-                    $s_address2
-                );
-            }
+        }
 
-            foreach( $stopWords as $stopWord ) {
-                foreach( $addrFiels as $addrField ) {
-                    if( strpos( $addrField, $stopWord ) !== false ) {
-                        $addressIsValid = false;
-                        break;
-                    }
+        foreach( $stopWords as $stopWord ) {
+            foreach( $addrFiels as $addrField ) {
+                if( strpos( $addrField, $stopWord ) !== false ) {
+                    $addressIsValid = false;
+                    break;
                 }
             }
+        }
 
-            if( $addressIsValid === false ) {
-                $inputIsValid = false;
+        if( $addressIsValid === false ) {
+            $inputIsValid = false;
 
-                $addrField                      = $shipping != '1' ? 's_address1' : 'address1';
-                $validationErrorMessage         = $xini->variable( 'AddressValidation', 'ValidationError' );
-                $fields[$addrField]['errors'] = array(
-                    ezpI18n::tr( 'extension/xrowecommerce', $validationErrorMessage )
-                );
-            }
+            $addrField                      = $shipping != '1' ? 's_address1' : 'address1';
+            $validationErrorMessage         = $xini->variable( 'AddressValidation', 'ValidationError' );
+            $fields[$addrField]['errors'] = array(
+                ezpI18n::tr( 'extension/xrowecommerce', $validationErrorMessage )
+            );
         }
     }
 
