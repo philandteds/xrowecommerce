@@ -23,9 +23,9 @@ $zipValidationRules = array(
         'example' => '1234'
     ),
     'GBR' => array(
-        'reg_exp'           => '^[\d\w]{6,7}$',
+        'reg_exp'           => '^[\d\w]{5,7}$',
         'ignore_whitespace' => true,
-        'example'           => '12A45BC'
+        'example'           => 'M60 1NW'
     ),
     'CAN' => array(
         'reg_exp'           => '^[\d\w]{6,7}$',
