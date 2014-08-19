@@ -499,11 +499,24 @@ if( $module->isCurrentAction( 'Store' ) ) {
                 $str  = $zip;
                 $rule = $zipValidationRules[$country];
 
+                $extraCheck = true;
+                if( $country === 'GBR' ) {  
+                    // There should not be more than 1 space
+                    if( substr_count( $str, ' ' ) > 1 ) {
+                        $extraCheck = false;
+                    }
+                    // Space before the last 3 chars of the zip
+                    $reversedStr = strrev( $str );
+                    if( $reversedStr[3] != ' ' ) {
+                        $extraCheck = false;
+                    }
+                }
+                
                 $ignorWhitespace = isset( $rule['ignore_whitespace'] ) && (bool) $rule['ignore_whitespace'];
                 if( $ignorWhitespace ) {
                     $str = str_replace( ' ', '', $str );
                 }
-                if( preg_match( '/' . $rule['reg_exp'] . '/i', $str ) !== 1 ) {
+                if( preg_match( '/' . $rule['reg_exp'] . '/i', $str ) !== 1 || $extraCheck === false ) {
                     $fields['zip']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'Invalid zip code. Valid example:  ' ) . $rule['example'];
                     $errors[]                   = $fields['zip']['errors'][0];
                     $inputIsValid               = false;
@@ -984,6 +997,19 @@ if( $module->isCurrentAction( 'Store' ) ) {
     $isAddrssValidationEnabled = $xini->variable( 'AddressValidation', 'Enabled' );
     $isAddrssValidationEnabled = in_array( $isAddrssValidationEnabled, array( 'yes', 'true', 'enabled' ) );
 
+    // Fix UK addresses
+    if( $country == 'GBR' ) {
+        $address1 = ucwords( $address1 );
+        $address2 = ucwords( $address2 );
+        $zip      = mb_strtoupper( $zip );
+    }
+    // Fix UK addresses
+    if( $s_country == 'GBR' ) {
+        $s_address1 = ucwords( $s_address1 );
+        $s_address2 = ucwords( $s_address2 );
+        $s_zip      = mb_strtoupper( $s_zip );
+    }
+    
     if( $isAddrssValidationEnabled ) {
         $addressIsValid = true;
         $stopWords      = (array) $xini->variable( 'AddressValidation', 'StopWords' );
