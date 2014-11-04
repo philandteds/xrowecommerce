@@ -943,7 +943,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
             if( count( $tmp ) != 2 ) {
                 continue;
             }
-            $restrictedProducts[] = trim( $productNumber );
+            $restrictedProducts[] = strtoupper(trim( $productNumber ));
         }
     }
 
@@ -971,8 +971,8 @@ if( $module->isCurrentAction( 'Store' ) ) {
                 continue;
             }
 
-            $productNumber = $pDataMap['product_id']->attribute( 'content' )
-                . '|' . $pDataMap['version']->attribute( 'content' );
+            $productNumber = strtoupper($pDataMap['product_id']->attribute( 'content' ))
+                . '|' . strtoupper($pDataMap['version']->attribute( 'content' ));
             if( in_array( $productNumber, $restrictedProducts ) ) {
                 $url                       = $pObject->attribute( 'main_node' )->attribute( 'url_alias' );
                 eZURI::transformURI( $url );
