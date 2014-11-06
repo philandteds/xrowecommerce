@@ -35,6 +35,10 @@ $zipValidationRules = array(
     'USA' => array(
         'reg_exp' => '(^\d{5}$)|(^\d{5}-\d{4}$)',
         'example' => '12345 or 12345-1234'
+    ),
+    'POL' => array(
+        'reg_exp' => '(^\d{2}-\d{3}$)',
+        'example' => '12-123'
     )
 );
 
