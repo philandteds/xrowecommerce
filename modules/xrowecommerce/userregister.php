@@ -1033,7 +1033,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
 
         foreach( $stopWords as $stopWord ) {
             foreach( $addrFiels as $addrField ) {
-                if( strpos( $addrField, $stopWord ) !== false ) {
+                if( preg_match( '/ ' . $stopWord . ' /im', ' ' . $addrField . ' ' ) ) {
                     $addressIsValid = false;
                     break;
                 }
