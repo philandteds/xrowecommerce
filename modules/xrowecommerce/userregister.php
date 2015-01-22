@@ -1275,9 +1275,11 @@ if( $module->isCurrentAction( 'Store' ) ) {
         $db->commit();
 
         $http->setSessionVariable( 'MyTemporaryOrderID', $order->attribute( 'id' ) );
-
-        $module->redirectTo( '/xrowecommerce/confirmorder/' );
-        return;
+        // Redirects might be disabled when this view is running from another module/view
+        if( isset( $Params['Module']->ViewParameters['disable_redirects'] ) === false ) {
+            $module->redirectTo( '/xrowecommerce/confirmorder/' );
+            return;
+        }
     } else {
         $tpl->setVariable( 'input_error', true );
     }
@@ -1391,4 +1393,6 @@ $Result['path']    = array(
         'text' => ezpI18n::tr( 'extension/xrowecommerce', 'Enter account information' )
     )
 );
+// It might be used in other modules
+$GLOBALS['xrow_userregister_tpl'] = $tpl;
 ?>
