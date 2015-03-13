@@ -8,10 +8,10 @@
 <script type="text/javascript" src={'javascript/yui/build/container/container-min.js'|ezdesign(no)}></script>
 <script type="text/javascript" src={'javascript/yui/animation-min.js'|ezdesign()}></script>*}
 
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/container/assets/skins/sam/container.css" />
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.1/build/container/container-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.1/build/animation/animation-min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/2.8.1/build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="https://yui-s.yahooapis.com/2.8.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="https://yui-s.yahooapis.com/2.8.1/build/container/container-min.js"></script>
+<script type="text/javascript" src="https://yui-s.yahooapis.com/2.8.1/build/animation/animation-min.js"></script>
 
 
 {literal}
