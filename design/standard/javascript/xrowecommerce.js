@@ -243,8 +243,8 @@ function updateSubdivisions( country_node )
                         {
                             subdivision_node.set('selectedIndex', 0);
                         }
-                        Y.one( '#s_state' ).removeAttribute( 'disabled' );
-                        Y.one( '#state' ).removeAttribute( 'disabled' );
+                        if( Y.one( '#s_state' ) ) Y.one( '#s_state' ).removeAttribute( 'disabled' );
+                        if( Y.one( '#state' ) ) Y.one( '#state' ).removeAttribute( 'disabled' );
                     });
                 }
             }
