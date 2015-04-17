@@ -30,7 +30,7 @@ $zipValidationRules = array(
     'CAN' => array(
         'reg_exp'           => '^[\d\w]{6,7}$',
         'ignore_whitespace' => true,
-        'example'           => '12A45BC'
+        'example'           => '12A 5BC'
     ),
     'USA' => array(
         'reg_exp' => '(^\d{5}$)|(^\d{5}-\d{4}$)',
