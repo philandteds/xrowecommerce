@@ -92,7 +92,7 @@ class xrowECommerce
     {
         $ini = eZINI::instance( 'xrowecommerce.ini' );
         $LocationArray = array();
-        if ( is_array( $ini->variable( 'MerchantLocations', 'Location' ) ) )
+        if ( $ini->hasVariable( 'MerchantLocations', 'Location' ) && is_array( $ini->variable( 'MerchantLocations', 'Location' ) ) )
         {
             foreach ( $ini->variable( 'MerchantLocations', 'Location' ) as $location )
             {
