@@ -30,7 +30,7 @@ $zipValidationRules = array(
     'CAN' => array(
         'reg_exp'           => '^[\d\w]{6,7}$',
         'ignore_whitespace' => true,
-        'example'           => '12A45BC'
+        'example'           => '12A 5BC'
     ),
     'USA' => array(
         'reg_exp' => '(^\d{5}$)|(^\d{5}-\d{4}$)',
@@ -506,7 +506,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
                 $rule = $zipValidationRules[$country];
 
                 $extraCheck = true;
-                if( $country === 'GBR' ) {  
+                if( $country === 'GBR' ) {
                     // There should not be more than 1 space
                     if( substr_count( $str, ' ' ) > 1 ) {
                         $extraCheck = false;
@@ -517,7 +517,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
                         $extraCheck = false;
                     }
                 }
-                
+
                 $ignorWhitespace = isset( $rule['ignore_whitespace'] ) && (bool) $rule['ignore_whitespace'];
                 if( $ignorWhitespace ) {
                     $str = str_replace( ' ', '', $str );
@@ -601,7 +601,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
                         }
                     } elseif( in_array( $Alpha2, $merchantcountries ) ) {
                         if( empty( $tax_id ) ) {
-                            
+
                         } elseif( !xrowECommerce::validateTIN( $Alpha2, $tax_id, $errors2 ) ) {
                             $inputIsValid                  = false;
                             $errors                        = array_merge( $errors, $errors2 );
@@ -633,7 +633,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
         }
     }
 
-    $maxCommentSize = 255;
+    $maxCommentSize = 220;
     if( $http->hasPostVariable( 'message' ) && strlen( strip_tags( $http->postVariable( 'message' ) ) ) > $maxCommentSize ) {
         $inputIsValid                   = false;
         $fields['message']['errors'][0] = ezpI18n::tr(
@@ -1017,7 +1017,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
         $s_address2 = ucwords( $s_address2 );
         $s_zip      = mb_strtoupper( $s_zip );
     }
-    
+
     if( $isAddrssValidationEnabled ) {
         $addressIsValid = true;
         $stopWords      = (array) $xini->variable( 'AddressValidation', 'StopWords' );
