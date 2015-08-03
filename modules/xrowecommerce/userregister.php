@@ -483,6 +483,8 @@ if( $module->isCurrentAction( 'Store' ) ) {
                 }
             }
         }
+    } else {
+        $state = null;
     }
 
     if( $fields['city']['enabled'] == true ) {
@@ -858,6 +860,8 @@ if( $module->isCurrentAction( 'Store' ) ) {
                     }
                 }
             }
+        } else {
+            $s_state = null;
         }
 
         if( $fields['s_phone']['enabled'] == true and $fields['s_phone']['required'] == true ) {
