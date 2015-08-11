@@ -973,15 +973,35 @@ if( $module->isCurrentAction( 'Store' ) ) {
             }
 
             $pDataMap = $pObject->attribute( 'data_map' );
-            if(
-                isset( $pDataMap['product_id'] ) === false || isset( $pDataMap['version'] ) === false
-            ) {
+            $pProductNumbers = array();
+            if( isset( $pDataMap['product_id'] ) && isset( $pDataMap['version'] ) ) {
+                $pProductNumbers[] = strtoupper($pDataMap['product_id']->attribute( 'content' ))
+                    . '|' . strtoupper($pDataMap['version']->attribute( 'content' ));
+            } elseif( isset( $pDataMap['product_variations'] ) ) {
+                $variation = null;
+                $options   = $basketPrproduct['item_object']->attribute( 'option_list' );
+                foreach( $options as $option ) {
+                    if( $option->attribute( 'name' ) == ProductVariationsType::PRODUCT_OPTION_VARIATION_ID ) {
+                        $variation = ProductVariation::fetch( (int) $options[0]->attribute( 'value' ) );
+                        break;
+                    }
+                }
+                
+                if( $variation instanceof ProductVariation ) {
+                    $vProducts = $variation->attribute( 'products' );
+                    foreach( $vProducts as $vProduct ) {
+                        $vDataMap = $vProduct->attribute( 'data_map' );
+                        if( isset( $vDataMap['product_id'] ) && isset( $vDataMap['version'] ) ) {
+                            $pProductNumbers[] = strtoupper($vDataMap['product_id']->attribute( 'content' ))
+                                . '|' . strtoupper($vDataMap['version']->attribute( 'content' ));
+                        }
+                    }
+                }
+            } else {
                 continue;
             }
 
-            $productNumber = strtoupper($pDataMap['product_id']->attribute( 'content' ))
-                . '|' . strtoupper($pDataMap['version']->attribute( 'content' ));
-            if( in_array( $productNumber, $restrictedProducts ) ) {
+            if( array_intersect( $pProductNumbers, $restrictedProducts ) > 0 ) {
                 $url                       = $pObject->attribute( 'main_node' )->attribute( 'url_alias' );
                 eZURI::transformURI( $url );
                 $restrictedProductErrors[] = ezpI18n::tr(
