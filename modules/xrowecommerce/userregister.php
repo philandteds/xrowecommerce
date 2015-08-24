@@ -959,6 +959,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
         $shippingCountry         = eZCountryType::fetchCountry( $shippingdestination, 'Alpha3' );
         $restrictedProductErrors = array();
         $basketPrproducts        = eZBasket::currentBasket()->attribute( 'items' );
+	eZDebug::writeDebug( $basketPrproducts, 'basket items' );
         foreach( $basketPrproducts as $basketPrproduct ) {
             if(
                 isset( $basketPrproduct['item_object'] ) === false || $basketPrproduct['item_object'] instanceof eZProductCollectionItem
@@ -1000,8 +1001,10 @@ if( $module->isCurrentAction( 'Store' ) ) {
             } else {
                 continue;
             }
-
-            if( array_intersect( $pProductNumbers, $restrictedProducts ) > 0 ) {
+	    eZDebug::writeDebug($pProductNumbers, 'products in basket');
+	    eZDebug::writeDebug($restrictedProducts, 'restricted products');
+	    eZDebug::writeDebug(array_intersect( $pProductNumbers, $restrictedProducts ), 'intersection' );
+            if( count( array_intersect( $pProductNumbers, $restrictedProducts ) ) > 0 ) {
                 $url                       = $pObject->attribute( 'main_node' )->attribute( 'url_alias' );
                 eZURI::transformURI( $url );
                 $restrictedProductErrors[] = ezpI18n::tr(
