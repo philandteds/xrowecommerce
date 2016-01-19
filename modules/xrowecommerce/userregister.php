@@ -837,7 +837,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
 
         if( $fields['s_state']['enabled'] == true and $fields['s_state']['required'] == true ) {
             $s_state = trim( $http->postVariable( 's_state' ) );
-            if( count( xrowGeonames::getSubdivisions( $s_country ) ) > 0 && ( $s_state == '' || !xrowGeonames::getSubdivisionName( $s_country, $s_state ) ) ) {
+            if( count( xrowGeonames::getSubdivisions( $s_country ) ) > 0 && ( $s_state == '' || ( !isset($additionalStates[$s_state]) && !xrowGeonames::getSubdivisionName( $s_country, $s_state ) ) ) ) {
                 $inputIsValid                   = false;
                 $fields['s_state']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No shipping state has been selected.' );
             } else {
