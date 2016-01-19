@@ -51,7 +51,12 @@ class getStateNameTemplateOperator
         {
             case 'get_state':
                 $Path = array();
+                $xini = eZINI::instance( 'xrowecommerce.ini' );
+                $additionalStates = $xini->variable( 'ShippingSettings', 'AdditionalStates' );
                 $state  = xrowGeonames::getSubdivisionName( $namedParameters[0], $operatorValue );
+                if ( $additionalStates && $additionalStates[$operatorValue] ) {
+                    $state = $additionalStates[$operatorValue];
+                }
                 $operatorValue = $state;
             break;
         }
