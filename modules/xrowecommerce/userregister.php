@@ -55,6 +55,8 @@ $enableRestircted = $xini->hasVariable( 'Settings', 'EnableRestircted' ) ? in_ar
 
 $excludeStates       = $xini->variable( 'ShippingSettings', 'ExcludeStates' );
 $allowedStates       = $xini->variable( 'ShippingSettings', 'AllowedStates' );
+$additionalStates = $xini->variable( 'ShippingSettings', 'AdditionalStates' );
+eZDebug::writeDebug($additionalStates, 'additional States');
 $additionalCountries = $xini->variable( 'ShippingSettings', 'AdditionalCountries' );
 $excludeCountries    = $xini->variable( 'ShippingSettings', 'ExcludeCountries' );
 
@@ -455,7 +457,7 @@ if( $module->isCurrentAction( 'Store' ) ) {
 
     if( $fields['state']['enabled'] == true and $fields['state']['required'] == true ) {
         $state = trim( $http->postVariable( 'state' ) );
-        if( count( xrowGeonames::getSubdivisions( $country ) ) > 0 && ( $state == '' || !xrowGeonames::getSubdivisionName( $country, $state ) ) ) {
+        if( count( xrowGeonames::getSubdivisions( $country ) ) > 0 && ( $state == '' || ( !isset($additionalStates[$state]) && !xrowGeonames::getSubdivisionName( $country, $state ) ) ) ) {
             $inputIsValid                 = false;
             $fields['state']['errors'][0] = ezpI18n::tr( 'extension/xrowecommerce', 'No billing state has been selected.' );
         } else {
