@@ -223,8 +223,18 @@ function updateSubdivisions( country_node )
                         };
                         nodes.each(deleteNodes);
                         var node = Y.Node.create( '<option>&nbsp;</option>' );
-                        subdivision_node.appendChild(node);
-                        var index = 0;
+			subdivision_node.appendChild(node);
+			//Just a simple append for allowing extra options. Just a one off. If getting repeated, need to comeup with better solution
+			if(country == 'USA') {
+				var additionalStateAA = '<option value="AA">Armed Forces (Americas)</option>';
+				var additionalStateAE = '<option value="AE">Armed Forces (Europe)</option>';
+				var additionalStateAP = '<option value="AP">Armed Forces (Pacific)</option>';
+				subdivision_node.appendChild(additionalStateAA);
+				subdivision_node.appendChild(additionalStateAE);
+				subdivision_node.appendChild(additionalStateAP);
+			}
+                        
+			var index = 0;
                         for (i in data ) 
                         {
                             index++;
