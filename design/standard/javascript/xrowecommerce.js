@@ -219,7 +219,7 @@ function updateSubdivisions( country_node )
                             index++;
                             if (oldStateValue == i) 
                             {
-                                var stateSelected = index;
+                                var stateSelected = (country == 'USA') ? index+3 : index;
                             }
                             var node = Y.Node.create( '<option value="' + i + '">' + data[i] + '</option>' );
                             subdivision_node.appendChild(node);
