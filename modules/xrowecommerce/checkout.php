@@ -73,6 +73,7 @@ if ( $order instanceof eZOrder )
                     $Result = array();
 
                     $tpl = eZTemplate::factory();
+                    $tpl->setVariable( 'order', $order );
                     $tpl->setVariable( 'operation_result', $operationResult );
 
                     $Result['content'] = $tpl->fetch( "design:shop/cancelcheckout.tpl" ) ;
