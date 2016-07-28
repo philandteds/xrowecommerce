@@ -261,6 +261,8 @@ if( $user->isLoggedIn() and in_array( $userobject->attribute( 'class_identifier'
     }
 }
 
+
+$accountInfoPrepopulated = false;
 $orderID = $http->sessionVariable( 'MyTemporaryOrderID' );
 $order   = eZOrder::fetch( $orderID );
 if( $order instanceof eZOrder ) {
@@ -269,17 +271,26 @@ if( $order instanceof eZOrder ) {
         foreach( $accountInfo as $name => $value ) {
             $$name = $value;
         }
+        $accountInfoPrepopulated = true;
     }
 }
 
-/*
-  // Check if user has an earlier order, copy order info from that one
-  $orderList = eZOrder::activeByUserID( $user->attribute( 'contentobject_id' ) );
-  if ( count( $orderList ) > 0 and $user->isLoggedIn() )
-  {
-  $accountInfo = $orderList[0]->accountInformation();
-  }
- */
+// Check if user has an earlier order, copy order info from that one
+if (!$accountInfoPrepopulated && $user->isLoggedIn()) {
+    $orderList = eZOrder::activeByUserID( $user->attribute( 'contentobject_id' ) );
+    if ( $orderList && count( $orderList ) > 0 )
+    {
+        $priorOrder = $orderList[count($orderList)-1];
+        if ($priorOrder && $priorOrder instanceof eZOrder) {
+            $accountInfo = $priorOrder->accountInformation();
+            foreach( $accountInfo as $name => $value ) {
+                $$name = $value;
+            }
+        }
+    }
+}
+
+
 
 $fields     = array();
 $field_keys = array(
