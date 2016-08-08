@@ -277,10 +277,10 @@ if( $order instanceof eZOrder ) {
 
 // Check if user has an earlier order, copy order info from that one
 if (!$accountInfoPrepopulated && $user->isLoggedIn()) {
-    $orderList = eZOrder::activeByUserID( $user->attribute( 'contentobject_id' ) );
+    $orderList =  findActiveOrdersByEmail( $user->attribute( 'email' ) );
     if ( $orderList && count( $orderList ) > 0 )
     {
-        $priorOrder = $orderList[count($orderList)-1];
+        $priorOrder = $orderList[0]; // results are sorted descending
         if ($priorOrder && $priorOrder instanceof eZOrder) {
             $accountInfo = $priorOrder->accountInformation();
             foreach( $accountInfo as $name => $value ) {
@@ -1435,4 +1435,15 @@ $Result['path']    = array(
 );
 // It might be used in other modules
 $GLOBALS['xrow_userregister_tpl'] = $tpl;
+
+function findActiveOrdersByEmail( $email, $asObject = true )
+{
+    return eZPersistentObject::fetchObjectList( eZOrder::definition(),
+        null,
+        array( "email" => $email,
+            'is_temporary' => 0 ),
+        array( "created" => "desc" ), null,
+        $asObject );
+}
+
 ?>
