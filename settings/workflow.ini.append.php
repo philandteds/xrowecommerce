@@ -11,6 +11,7 @@ AvailableEventTypes[]=event_xrowaftersale
 AvailableEventTypes[]=event_ezproductcount
 AvailableEventTypes[]=event_ezcouponworkflow
 AvailableEventTypes[]=event_ezshippinginterface
+AvailableEventTypes[]=event_saveorderaddress
 
 [CouponWorkflow]
 Description=Coupon

@@ -10,5 +10,6 @@ ModuleList[]=productvariation
 ModuleList[]=order
 ModuleList[]=shipping
 ModuleList[]=variationupload
+ModuleList[]=multipleaddresses
 
 */ ?>
