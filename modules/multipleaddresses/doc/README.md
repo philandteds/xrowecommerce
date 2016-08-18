@@ -17,7 +17,7 @@ In detail:
 
 Not strictly necessary, but this will make both the batch job to generate addresses and the workflow task to insert them significantly faster.
 
- create index ndx_ezuser_email_address on ezuser(email);
+    create index ndx_ezuser_email_address on ezuser(email);
 
 
 ## Installation:
@@ -27,8 +27,8 @@ Not strictly necessary, but this will make both the batch job to generate addres
 
 Generate the addresses with the following:
 
- cd <ezpublish-root>
- php extension/xrowecommerce/bin/createaddressesfromorders.php -l admin -p <password> --allow-root-user
+    cd <ezpublish-root>
+    php extension/xrowecommerce/bin/createaddressesfromorders.php -l admin -p <password> --allow-root-user
 
 This task **will** take significant time. Progress is logged to the console, including a % complete readout.
 
