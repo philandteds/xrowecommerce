@@ -363,114 +363,12 @@ function changeShipping()
         else 
         {
             Y.one( '#shippinginfo' ).setStyle('display', 'block' );
-            /*if (document.register.company_name) 
-            {
-                document.register.s_company_name.value = document.register.company_name.value;
-            }*/
-            if ( Y.one( '#s_company_name' ) && Y.one( '#company_name' ) && Y.one( '#company_name' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_company_name' ).set( 'value', Y.one( '#company_name' ).get( 'value' ) );
-            }
-
-            /*if (document.register.company_additional) 
-            {
-                document.register.s_company_additional.value = document.register.company_additional.value;
-            }*/
-            if ( Y.one( '#s_company_additional' ) && Y.one( '#company_additional' ) && Y.one( '#company_additional' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_company_additional' ).set( 'value', Y.one( '#company_additional' ).get( 'value' ) );
-            }
-            
-            if ( Y.one( '#s_title' ) && Y.one( '#title' ) && Y.one( '#title' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_title' ).set( 'value', Y.one( '#title' ).get( 'value' ) );
-            }
-
-            //document.register.s_first_name.value = document.register.first_name.value;
-            if ( Y.one( '#s_first_name' ) && Y.one( '#first_name' ) && Y.one( '#first_name' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_first_name' ).set( 'value', Y.one( '#first_name' ).get( 'value' ) );
-            }
-
-            /*if (document.register.mi) 
-            {
-                document.register.s_mi.value = document.register.mi.value;
-            }*/
-            if ( Y.one( '#s_mi' ) && Y.one( '#mi' ) && Y.one( '#mi' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_mi' ).set( 'value', Y.one( '#mi' ).get( 'value' ) );
-            }
-
-            //document.register.s_last_name.value = document.register.last_name.value;
-            if ( Y.one( '#s_last_name' ) && Y.one( '#last_name' ) && Y.one( '#last_name' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_last_name' ).set( 'value', Y.one( '#last_name' ).get( 'value' ) );
-            }
-
-            //document.register.s_address1.value = document.register.address1.value;
-            if ( Y.one( '#s_address1' ) && Y.one( '#address1' ) && Y.one( '#address1' ).get( 'value' ) != '' ) 
-            {
-                Y.one( '#s_address1' ).set( 'value', Y.one( '#address1' ).get( 'value' ) );
-            }
-
-            /*if (Y.one('#address2') && Y.one('#s_address2')) 
-            {
-                document.register.s_address2.value = document.register.address2.value;
-            }*/
-            if ( Y.one( '#s_address2' ) && Y.one( '#address2' ) && Y.one( '#address2' ).get( 'value' ) != '' ) 
-            {
-                Y.one( '#s_address2' ).set( 'value', Y.one( '#address2' ).get( 'value' ) );
-            }
-
-            //document.register.s_city.value = document.register.city.value;
-            if ( Y.one( '#s_city' ) && Y.one( '#city' ) && Y.one( '#city' ).get( 'value' ) != '' ) 
-            {
-                Y.one( '#s_city' ).set( 'value', Y.one( '#city' ).get( 'value' ) );
-            }
-
-            //document.register.s_zip.value = document.register.zip.value;
-            if ( Y.one( '#s_zip' ) && Y.one( '#zip' ) && Y.one( '#zip' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_zip' ).set( 'value', Y.one( '#zip' ).get( 'value' ) );
-            }
-
-            //document.register.s_country.selectedIndex = document.register.country.selectedIndex;
-            if ( Y.one( '#s_country' ) && Y.one( '#country' ) && Y.one( '#country' ).get( 'selectedIndex' ) != '' )
-            {
-                Y.one( '#s_country' ).set( 'selectedIndex', Y.one( '#country' ).get( 'selectedIndex' ) );
-                updateSubdivisions( Y.one( '#s_country' ) );
-            }
             
             if ( Y.one( '#s_country' ) && Y.one( '#country' ) && Y.one( '#country' ).get( 'selectedIndex' ) != '' )
             {
-                Y.one( '#s_country' ).set( 'selectedIndex', Y.one( '#country' ).get( 'selectedIndex' ) );
                 updateSubdivisions( Y.one( '#s_country' ) );
             }
             
-            //document.register.s_state.selectedIndex = document.register.state.selectedIndex;
-            if ( Y.one( '#s_state' ) && Y.one( '#state' ) && Y.one( '#state' ).get( 'selectedIndex' ) != '' )
-            {
-                Y.one( '#s_state' ).set( 'selectedIndex', Y.one( '#state' ).get( 'selectedIndex' ) );
-            }
-
-            //document.register.s_phone.value = document.register.phone.value;
-            if ( Y.one( '#s_phone' ) && Y.one( '#phone' ) && Y.one( '#phone' ).get( 'value' ) != '' )
-            {
-                Y.one( '#s_phone' ).set( 'value', Y.one( '#phone' ).get( 'value' ) );
-            }
-
-            //document.register.s_fax.value = document.register.fax.value;
-            if ( Y.one( '#s_fax' ) && Y.one( '#fax' ) && Y.one( '#fax' ).get( 'value' ) != '' ) 
-            {
-               Y.one( '#s_fax' ).set( 'value', Y.one( '#fax' ).get( 'value' ) );
-            }
-
-            //document.register.s_email.value = document.register.email.value;
-            if ( Y.one( '#s_email' ) && Y.one( '#email' ) && Y.one( '#email' ).get( 'value' ) != '' ) 
-            {
-                Y.one( '#s_email' ).set( 'value', Y.one( '#email' ).get( 'value' ) );
-            }
-
         }
     });
 };
