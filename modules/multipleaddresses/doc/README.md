@@ -22,6 +22,14 @@ Not strictly necessary, but this will make both the batch job to generate addres
 
 ## Installation:
 
+### Add Extra fields to the Address Content Class
+
+Add the following fields to the address Content Class.
+
+ * addressee_name
+ * street_address_2
+ * email
+ * phone
 
 ### Prepopulate addresses
 

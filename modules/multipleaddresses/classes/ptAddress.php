@@ -34,10 +34,14 @@ class ptAddress
                 'parent_node_id' => $userNodeId,
                 'attributes' => array(
                     'street_address' => $this->StreetAddress,
+                    'street_address_2' => $this->StreetAddress2,
                     'city' => $this->City,
                     'state' => $this->State,
                     'country' => $this->Country,
                     'zip' => $this->Zip,
+                    'email' => $this->Email,
+                    'phone' => $this->Phone,
+                    'addressee_name' => $this->AddresseeName,
                     'consumer_profile' => $consumerProfileId
                 )
             )
@@ -102,29 +106,6 @@ class ptAddress
         return false;
     }
 
-    /**
-     * Takes a separated street address line 1 and street address line 2, and returns a single-line representation.
-     * This is required because xrowecommerce uses a single-line street_address field in the address contentobject,
-     * while the eZOrder stores the address in two lines.
-     *
-     * @param $address1 street address line 1
-     * @param $address2 street address line 2
-     * @return string collapsed street address
-     */
-    private static function collapseStreetAddressLines($address1, $address2)
-    {
-
-        $addressFragments = array();
-
-        if (trim($address1) != '')
-            $addressFragments[] = $address1;
-
-        if (trim($address2) != '')
-            $addressFragments[] = $address2;
-
-        return implode(', ', $addressFragments);
-    }
-
     private static function countryName($countryCode)
     {
         if (!$countryCode) {
@@ -165,14 +146,16 @@ class ptAddress
      */
     public function canonicalAddress()
     {
-        return trim(implode(';', array($this->StreetAddress, $this->City, $this->State, $this->Country, $this->Zip)));
+        return trim(implode(';', array($this->StreetAddress, $this->StreetAddress2, $this->City, $this->State, $this->Country, $this->Zip)));
     }
 
     /**
      * Collapses an address into a brief, simplified one-liner for human consumption. Used to populate dropdown lists etc.
      */
     public function addressSummary() {
-        return trim(implode(',', array($this->StreetAddress, $this->City)));
+        $addressFragments = array_filter(array($this->StreetAddress, $this->StreetAddress2, $this->City));
+
+        return trim(implode(',', $addressFragments));
     }
 
     /**
@@ -193,11 +176,15 @@ class ptAddress
         $state = $dataMap['state']->content();
 
         $address = new ptAddress();
+        $address->AddresseeName = $dataMap['addressee_name']->content();
         $address->StreetAddress = $dataMap['street_address']->content();
+        $address->StreetAddress2 = $dataMap['street_address_2']->content();
         $address->City = $dataMap['city']->content();
         $address->State = $state;
         $address->Country = $country;
         $address->Zip = $dataMap['zip']->content();
+        $address->Email = $dataMap['email']->content();
+        $address->Phone = $dataMap['phone']->content();
 
         return $address;
     }
@@ -242,18 +229,27 @@ class ptAddress
         $state = self::stateName($info["{$prefix}state"], $countryCode);
 
         $address = new ptAddress();
-        $address->StreetAddress = self::collapseStreetAddressLines($info["{$prefix}address1"], $info["{$prefix}address2"]);
+
+        $address->AddresseeName = implode(' ', array($info["first_name"], $info["last_name"]));
+        $address->StreetAddress = $info["{$prefix}address1"];
+        $address->StreetAddress2 = $info["{$prefix}address2"];
         $address->City = $info["{$prefix}city"];
         $address->State = $state;
         $address->Country = $country;
         $address->Zip = $info["{$prefix}zip"];
+        $address->Phone = $info["{$prefix}phone"];
+        $address->Email = $info["{$prefix}email"];
 
         return $address;
     }
 
+    var $AddresseeName;
     var $StreetAddress;
+    var $StreetAddress2;
     var $City;
     var $State;
     var $Country;
     var $Zip;
+    var $Phone;
+    var $Email;
 }
