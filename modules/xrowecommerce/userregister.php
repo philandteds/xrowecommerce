@@ -276,7 +276,7 @@ if( $order instanceof eZOrder ) {
 }
 
 // Check if user has an earlier order, copy order info from that one
-if (!$accountInfoPrepopulated && $user->isLoggedIn()) {
+/*if (!$accountInfoPrepopulated && $user->isLoggedIn()) {
     $orderList =  findActiveOrdersByEmail( $user->attribute( 'email' ) );
     if ( $orderList && count( $orderList ) > 0 )
     {
@@ -288,7 +288,7 @@ if (!$accountInfoPrepopulated && $user->isLoggedIn()) {
             }
         }
     }
-}
+}*/
 
 
 
