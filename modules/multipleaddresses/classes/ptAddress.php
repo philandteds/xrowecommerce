@@ -41,7 +41,8 @@ class ptAddress
                     'zip' => $this->Zip,
                     'email' => $this->Email,
                     'phone' => $this->Phone,
-                    'addressee_name' => $this->AddresseeName,
+                    'addressee_first_name' => $this->AddresseeFirstName,
+                    'addressee_last_name' => $this->AddresseeLastName,
                     'consumer_profile' => $consumerProfileId
                 )
             )
@@ -146,7 +147,7 @@ class ptAddress
      */
     public function canonicalAddress()
     {
-        return trim(implode(';', array($this->StreetAddress, $this->StreetAddress2, $this->City, $this->State, $this->Country, $this->Zip)));
+        return trim(implode(';', array($this->AddresseeFirstName, $this->AddresseeLastName, $this->StreetAddress, $this->StreetAddress2, $this->City, $this->State, $this->Country, $this->Zip)));
     }
 
     /**
@@ -176,7 +177,8 @@ class ptAddress
         $state = $dataMap['state']->content();
 
         $address = new ptAddress();
-        $address->AddresseeName = $dataMap['addressee_name']->content();
+        $address->AddresseeFirstName = self::capitalize($dataMap['addressee_first_name']->content());
+        $address->AddresseeLastName = self::capitalize($dataMap['addressee_last_name']->content());
         $address->StreetAddress = $dataMap['street_address']->content();
         $address->StreetAddress2 = $dataMap['street_address_2']->content();
         $address->City = $dataMap['city']->content();
@@ -230,7 +232,8 @@ class ptAddress
 
         $address = new ptAddress();
 
-        $address->AddresseeName = implode(' ', array($info["first_name"], $info["last_name"]));
+        $address->AddresseeFirstName = self::capitalize($info["${prefix}first_name"]);
+        $address->AddresseeLastName = self::capitalize($info["${prefix}last_name"]);
         $address->StreetAddress = $info["{$prefix}address1"];
         $address->StreetAddress2 = $info["{$prefix}address2"];
         $address->City = $info["{$prefix}city"];
@@ -243,7 +246,16 @@ class ptAddress
         return $address;
     }
 
-    var $AddresseeName;
+    static function capitalize($str) {
+        if (!$str) {
+            return $str;
+        }
+
+        return ucfirst(strtolower($str));
+    }
+
+    var $AddresseeFirstName;
+    var $AddresseeLastName;
     var $StreetAddress;
     var $StreetAddress2;
     var $City;

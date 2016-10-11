@@ -24,12 +24,18 @@ Not strictly necessary, but this will make both the batch job to generate addres
 
 ### Add Extra fields to the Address Content Class
 
-Add the following fields to the address Content Class.
+Add the following fields to the Address Content Class.
 
- * addressee_name
+ * addressee_first_name
+ * addressee_last_name
  * street_address_2
  * email
  * phone
+
+If present, remove the following field from the Address Content Class
+
+ * addressee_name
+
 
 ### Prepopulate addresses
 

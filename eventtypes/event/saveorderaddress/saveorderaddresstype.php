@@ -26,8 +26,8 @@ class SaveOrderAddressType  extends eZWorkflowEventType
         $accountInformation = $order->accountInformation();
 
         $email = $accountInformation['email'];
-        $user = eZUser::fetchByEmail($email);
-        if ($user) {
+        $user = eZUser::currentUser();
+        if ($user && !$user->isAnonymous()) {
 
             $userId = $user->id();
 
