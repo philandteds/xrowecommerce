@@ -147,16 +147,17 @@ class ptAddress
      */
     public function canonicalAddress()
     {
-        return trim(implode(';', array($this->AddresseeFirstName, $this->AddresseeLastName, $this->StreetAddress, $this->StreetAddress2, $this->City, $this->State, $this->Country, $this->Zip)));
+        return strtolower(trim(implode(';', array($this->AddresseeFirstName, $this->AddresseeLastName, $this->StreetAddress, $this->StreetAddress2, $this->City, $this->State, $this->Country, $this->Zip))));
     }
 
     /**
      * Collapses an address into a brief, simplified one-liner for human consumption. Used to populate dropdown lists etc.
      */
     public function addressSummary() {
+
         $addressFragments = array_filter(array($this->StreetAddress, $this->StreetAddress2, $this->City));
 
-        return trim(implode(',', $addressFragments));
+        return trim($this->AddresseeFirstName . " " . $this->AddresseeLastName) . ": " .  trim(implode(', ', $addressFragments));
     }
 
     /**
@@ -179,11 +180,11 @@ class ptAddress
         $address = new ptAddress();
         $address->AddresseeFirstName = self::capitalize($dataMap['addressee_first_name']->content());
         $address->AddresseeLastName = self::capitalize($dataMap['addressee_last_name']->content());
-        $address->StreetAddress = $dataMap['street_address']->content();
-        $address->StreetAddress2 = $dataMap['street_address_2']->content();
-        $address->City = $dataMap['city']->content();
-        $address->State = $state;
-        $address->Country = $country;
+        $address->StreetAddress = self::capitalize($dataMap['street_address']->content());
+        $address->StreetAddress2 = self::capitalize($dataMap['street_address_2']->content());
+        $address->City = self::capitalize($dataMap['city']->content());
+        $address->State = self::capitalize($state);
+        $address->Country = self::capitalize($country);
         $address->Zip = $dataMap['zip']->content();
         $address->Email = $dataMap['email']->content();
         $address->Phone = $dataMap['phone']->content();
@@ -234,12 +235,12 @@ class ptAddress
 
         $address->AddresseeFirstName = self::capitalize($info["${prefix}first_name"]);
         $address->AddresseeLastName = self::capitalize($info["${prefix}last_name"]);
-        $address->StreetAddress = $info["{$prefix}address1"];
-        $address->StreetAddress2 = $info["{$prefix}address2"];
-        $address->City = $info["{$prefix}city"];
-        $address->State = $state;
-        $address->Country = $country;
-        $address->Zip = $info["{$prefix}zip"];
+        $address->StreetAddress = self::capitalize($info["{$prefix}address1"]);
+        $address->StreetAddress2 = self::capitalize($info["{$prefix}address2"]);
+        $address->City = self::capitalize($info["{$prefix}city"]);
+        $address->State = self::capitalize($state);
+        $address->Country = self::capitalize($country);
+        $address->Zip = self::capitalize($info["{$prefix}zip"]);
         $address->Phone = $info["{$prefix}phone"];
         $address->Email = $info["{$prefix}email"];
 
@@ -251,7 +252,7 @@ class ptAddress
             return $str;
         }
 
-        return ucfirst(strtolower($str));
+        return ucwords(strtolower($str));
     }
 
     var $AddresseeFirstName;
