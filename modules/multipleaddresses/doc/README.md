@@ -60,3 +60,15 @@ Add the "Save Order Address" workflow task:
  * Edit
  * Add Event / Save Order Address
  * OK
+
+### Set up Address Content Class
+
+Edit the "address" content class and adjust the Object Name Pattern to the desired format. This controls both
+name of the address object in the Admin interface, and how historical addresses will be presented to the user in the 
+"historical address" dropdown on the user registration form. 
+
+If the Object Name Pattern is changed, the names for the Address objects must be regnerated. To accomplish this, run the following:
+
+    cd <ezpublish-root>
+    php extension/xrowecommerce/bin/updateaddresscontentobjectnames.php -l admin -p <password> --allow-root-user
+

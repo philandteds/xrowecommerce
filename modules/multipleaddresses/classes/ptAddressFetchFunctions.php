@@ -12,7 +12,8 @@ class ptAddressFetchFunctions
             $result = array();
             /** @var ptAddress $address */
             foreach ($addresses as $address) {
-                $result[] = $address->addressSummary()                    ;
+                //$result[] = $address->addressSummary()                    ;
+                $result[] = $address->ContentObjectName;
             }
 
             return array( 'result' => $result );

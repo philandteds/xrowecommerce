@@ -189,6 +189,8 @@ class ptAddress
         $address->Email = $dataMap['email']->content();
         $address->Phone = $dataMap['phone']->content();
 
+        $address->ContentObjectName = $addressContentObject->name();
+
         return $address;
     }
 
@@ -265,4 +267,6 @@ class ptAddress
     var $Zip;
     var $Phone;
     var $Email;
+
+    var $ContentObjectName;
 }
