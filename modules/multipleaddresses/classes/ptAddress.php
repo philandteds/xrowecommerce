@@ -249,6 +249,67 @@ class ptAddress
         return $address;
     }
 
+    /**
+     * Update an existing Consumer Profile and set it's Primary Address field to the given address.
+     *
+     * @param eZUser $userId ID of user to update. We assume that this user has a ConsumerProfile.
+     * @param int  $addressContentObjectId ID of the address to set. Must belong to the user.
+     * @return bool true on success, false on failure
+     */
+    static function setPreferredAddress($user, $addressContentObjectId) {
+        if (!$user || !$addressContentObjectId) {
+            return false;
+        }
+        /* @var eZContentObjectTreeNode $userNode */
+        $userObject = $user->contentObject();
+        $userNode = $userObject->mainNode();
+
+
+
+        // find the address by ID, restricted to the current user.
+        $addressCandidateNodes = $userNode->subTree(
+            array('AttributeFilter' => array('AND', array('contentobject_id', '=', $addressContentObjectId))
+            )
+        );
+
+        if (empty($addressCandidateNodes)) { // no such address (for this user)
+            return false;
+        }
+        /* @var eZContentObject $addressCandidateObject */
+        $addressCandidateObject = $addressCandidateNodes[0]->object();
+
+        $consumerProfileAttributes = array('preferred_address' => $addressCandidateObject->ID);
+
+
+        // find the consumer profile for this user, if any.
+        $consumerProfileList = $userNode->subTree(
+            array( 'ClassFilterType' => 'include',
+                   'ClassFilterArray' => array('consumer_profile')
+            )
+        );
+        if (empty($consumerProfileList)) {
+            // no consumer profile. We'll need to create one.
+            $consumerProfileAttributes['name'] = $userObject->name();
+            $consumerProfileAttributes['user'] = $userObject->ID;
+
+            // create
+            eZContentFunctions::createAndPublishObject(
+                array (
+                    'parent_node_id' => $userNode->NodeID,
+                    'class_identifier' => 'consumer_profile',
+                    'attributes' => $consumerProfileAttributes
+                )
+            );
+
+        } else {
+            $consumerProfileObject = $consumerProfileList[0]->object();
+            eZContentFunctions::updateAndPublishObject($consumerProfileObject, array ( 'attributes' => $consumerProfileAttributes ));
+
+        }
+
+        return true;
+    }
+
     static function capitalize($str) {
         if (!$str) {
             return $str;

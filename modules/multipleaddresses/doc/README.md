@@ -26,16 +26,21 @@ Not strictly necessary, but this will make both the batch job to generate addres
 
 Add the following fields to the Address Content Class.
 
- * addressee_first_name
- * addressee_last_name
- * street_address_2
- * email
- * phone
+ * addressee_first_name (text line)
+ * addressee_last_name (text line)
+ * street_address_2 (text line)
+ * email (text line)
+ * phone (text line)
 
 If present, remove the following field from the Address Content Class
 
  * addressee_name
 
+### Add Extra fields to the Consumer Profile Class
+
+Add the following fields to the Consumer Profile Class
+
+ * preferred_address (object relation)
 
 ### Prepopulate addresses
 
