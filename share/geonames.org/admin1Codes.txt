@@ -145,14 +145,14 @@ AT.07	Tyrol
 AT.08	Vorarlberg
 AT.09	Vienna
 AU.00	Heard Island and McDonald Islands (general)
-AU.01	ACT
-AU.02	NSW
-AU.03	NT
-AU.04	QLD
-AU.05	SA
-AU.06	TAS
-AU.07	VIC
-AU.08	WA
+AU.ACT	Australian Capital Territory
+AU.NSW	New South Wales
+AU.NT	Northern Territory
+AU.QLD	Queensland
+AU.SA	South Australia
+AU.TAS	Tasmania
+AU.VIC	Victoria
+AU.WA	Western Australia
 AW.00	Aruba (general)
 AZ.00	Azerbaijan (general)
 AZ.01	Abşeron

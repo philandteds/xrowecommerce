@@ -124,7 +124,7 @@ array(19) {
 
             foreach ( $lines as $line_num => $line )
             {
-                if ( preg_match_all( '/([\w][\w])\.([\w][\w])\t(.*)\n/', $line, $matches ) )
+                if ( preg_match_all( '/([\w][\w])\.([\w]{2,3})\t(.*)\n/', $line, $matches ) )
                 {
                     if ( $matches[2][0] != '00' )
                     {
