@@ -119,7 +119,8 @@ class eZOrder extends eZPersistentObject
                                                       'account_email' => 'accountEmail',
                                                       'productcollection' => 'productCollection',
                                                       'order_info' => 'orderInfo',
-													  'order_nr' => 'getOrderNr' ),
+													  'order_nr' => 'getOrderNr',
+                                                      'bond' => 'bond'),
                       "keys" => array( "id" ),
                       "increment_key" => "id",
                       "class_name" => "eZOrder",
@@ -862,6 +863,9 @@ class eZOrder extends eZPersistentObject
         {
             $total += $item['total_price_ex_vat'];
         }
+
+        $total += $this->bond();
+
         return round( $total, 2 );
     }
 
@@ -877,6 +881,9 @@ class eZOrder extends eZPersistentObject
                 $total += $item->attribute( 'price_inc_vat' );
             }
         }
+
+        $total += $this->bond();
+
         return round( $total, 2 );
     }
 
@@ -892,6 +899,7 @@ class eZOrder extends eZPersistentObject
                 $total += $item->attribute( 'price_ex_vat' );
             }
         }
+
         return round( $total, 2 );
     }
 
@@ -902,7 +910,8 @@ class eZOrder extends eZPersistentObject
     	if( count( $items ) > 0 ) {
     		$VAT = $items[0]['vat_value'];
     	}
-    	return round( $this->attribute( 'total_ex_vat' ) * ( 100 + $VAT ) / 100 , 2 );
+
+    	return round( ($this->attribute( 'total_ex_vat' ) * ( 100 + $VAT ) / 100), 2 );
         //return $this->productTotalIncVAT() + $this->orderTotalIncVAT();
     }
 
@@ -1598,6 +1607,12 @@ class eZOrder extends eZPersistentObject
         $currencyCode = $locale->currencyShortName();
         return $currencyCode;
     }
+
+
+    function bond() {
+        return ptBondCalculator::calculateTotalBond($this->productItemsOrdered());
+    }
+
 
     /// \privatesection
     /// The cached status object or \c null if not cached yet.
