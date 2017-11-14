@@ -5,6 +5,7 @@ $(document).ready(function() {
     
 
 });
+if( window.YUI !== undefined ){
 YUI().use( 'node', function(Y)
 {
     Y.on( 'domready', function() 
@@ -61,6 +62,8 @@ YUI().use("node", "event-mouseenter", function(Y) {
         }, "#overlay-text p");
     }
 });
+
+}
 
 /* uncomment for debugging
 YUI({
