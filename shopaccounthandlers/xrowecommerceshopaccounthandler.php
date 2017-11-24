@@ -246,6 +246,7 @@ class xrowECommerceShopAccountHandler
             'message' , 
             'no_partial_delivery' , 
             'coupon_code' ,
+            'newsletter' ,
             xrowECommerce::ACCOUNT_KEY_PAYMENTMETHOD, 
             xrowECommerce::ACCOUNT_KEY_TRANSACTIONID, 
             xrowECommerce::ACCOUNT_KEY_NUMBER, 
