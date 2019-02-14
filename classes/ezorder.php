@@ -378,6 +378,10 @@ class eZOrder extends eZPersistentObject
             }
 
             $price = $productItem['price'];
+            // double check price via SKU
+            if (empty($price)) {
+                $price = PTBasketCheckerHandler::confirmEmptyProductPrice( $productItem, $price );
+            }
 
             if ( $productItem['is_vat_inc'] )
             {
