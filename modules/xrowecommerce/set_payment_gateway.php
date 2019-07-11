@@ -42,7 +42,7 @@ switch ( $Params['Gateway'] ) {
             == 'enabled';
         break;
 }
-if ($pass === true) {
+if ($pass !== true) {
     return $Params['Module']->handleError( eZError::KERNEL_NOT_AVAILABLE, 'kernel' );
 }
 
