@@ -24,5 +24,18 @@ if(
 	$http->setSessionVariable( 'paymentgateway', $Params['Gateway'] );
 }
 
+// some controller checking t they can use the relevant gateway
+$pass = true;
+switch ( $Params['Gateway'] ) {
+	case 'xrowCashOnDeliveryGateway' :
+		// Only country is UAE currently
+		$pass = (eZINI::instance( 'shopping.ini' )->variable('General', 'FreeGatewayEnabled' ))
+				== 'enabled';
+		break;
+}
+if ($pass !== true) {
+	return $Params['Module']->handleError( eZError::KERNEL_NOT_AVAILABLE, 'kernel' );
+}
+
 return $Params['Module']->redirectTo( '/xrowecommerce/checkout/' );
 ?>
