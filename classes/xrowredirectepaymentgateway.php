@@ -49,7 +49,11 @@ class xrowRedirectEPaymentGateway extends xrowEPaymentGateway
                     }
                     else
                     {
-                        eZDebug::writeError( "Error. Payment rejected: unable to fetch PaymentObject or payment status 'not approved'", __METHOD__ );
+                        if (!is_object( $thePayment )) {
+                            eZDebug::writeError( "Error. unable to fetch PaymentObject for order $orderID", __METHOD__ );
+                        } else {
+                            eZDebug::writeError( "Error. Payment rejected: payment status 'not approved' for order $orderID", __METHOD__ );
+                        }
                     }
                     return eZWorkflowType::STATUS_REJECTED;
                 }
