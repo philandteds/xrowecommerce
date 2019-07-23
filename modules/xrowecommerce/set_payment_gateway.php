@@ -24,34 +24,12 @@ if(
     $http->setSessionVariable( 'paymentgateway', $Params['Gateway'] );
 }
 
-// some controller checking to confirm they can use the relevant gateway
-$pass = true;
-switch ( $Params['Gateway'] ) {
-    case 'xrowCashOnDeliveryGateway' :
-        // Only country is UAE currently
-        $pass = eZINI::instance( 'shopping.ini' )->variable('General', 'FreeGatewayEnabled' )
-            == 'enabled';
-        break;
-    case 'xrowAdvancepayment' :
-        //TODO review business logic required for advanced payment
-        // but disabling for now
-        $pass = false;
-        break;
-    case 'free' :
-        $pass = eZINI::instance( 'shopping.ini' )->variable('General', 'FreeGatewayEnabled' )
-            == 'enabled';
-        break;
-}
-if ($pass !== true) {
-    return $Params['Module']->handleError( eZError::KERNEL_NOT_AVAILABLE, 'kernel' );
-}
-
 // some controller checking t they can use the relevant gateway
 $pass = true;
 switch ( $Params['Gateway'] ) {
 	case 'xrowCashOnDeliveryGateway' :
 		// Only country is UAE currently
-		$pass = (eZINI::instance( 'shopping.ini' )->variable('General', 'FreeGatewayEnabled' ))
+		$pass = eZINI::instance( 'shopping.ini' )->variable('General', 'FreeGatewayEnabled' )
 				== 'enabled';
 		break;
 }
